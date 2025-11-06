@@ -5,9 +5,11 @@ import { KYCVerificationForm } from './components/KYC/KYCVerificationForm';
 import { LoanApplicationForm } from './components/Loan/LoanApplicationForm';
 import { GovernanceDashboard } from './components/Dashboard/GovernanceDashboard';
 import { ComplianceReviewQueue } from './components/Review/ComplianceReviewQueue';
-import { Shield, FileText, TrendingUp, LayoutDashboard, Clipboard, LogOut, Menu, X } from 'lucide-react';
+import { CommunicationLog } from './components/Notifications/CommunicationLog';
+import { NotificationPreferences } from './components/Notifications/NotificationPreferences';
+import { Shield, FileText, TrendingUp, LayoutDashboard, Clipboard, LogOut, Menu, X, Bell, Settings } from 'lucide-react';
 
-type View = 'dashboard' | 'kyc' | 'loan' | 'review';
+type View = 'dashboard' | 'kyc' | 'loan' | 'review' | 'communications' | 'notifications';
 
 function AppContent() {
   const { user, profile, loading, signOut } = useAuth();
@@ -53,6 +55,17 @@ function AppContent() {
       label: 'Loan Application',
       icon: <TrendingUp className="w-5 h-5" />,
       excludeRoles: ['cco', 'internal_auditor'],
+    },
+    {
+      id: 'communications',
+      label: 'Communication Log',
+      icon: <Bell className="w-5 h-5" />,
+    },
+    {
+      id: 'notifications',
+      label: 'Notification Settings',
+      icon: <Settings className="w-5 h-5" />,
+      excludeRoles: ['cco', 'internal_auditor', 'compliance_manager'],
     },
   ];
 
@@ -174,6 +187,8 @@ function AppContent() {
         {currentView === 'review' && <ComplianceReviewQueue />}
         {currentView === 'kyc' && <KYCVerificationForm />}
         {currentView === 'loan' && <LoanApplicationForm />}
+        {currentView === 'communications' && <CommunicationLog />}
+        {currentView === 'notifications' && <NotificationPreferences />}
       </main>
 
       <footer className="bg-white border-t border-slate-200 mt-12">
