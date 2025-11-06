@@ -3,6 +3,7 @@ import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
 import { CheckCircle, XCircle, Eye, FileText, TrendingUp, Clock } from 'lucide-react';
 import type { KycStatus, LoanStatus } from '../../lib/database.types';
+import { KYCDetailView } from './KYCDetailView';
 
 interface KYCApplication {
   id: string;
@@ -30,7 +31,7 @@ export function ComplianceReviewQueue() {
   const [kycApplications, setKycApplications] = useState<KYCApplication[]>([]);
   const [loanApplications, setLoanApplications] = useState<LoanApplication[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedItem, setSelectedItem] = useState<string | null>(null);
+  const [selectedKycId, setSelectedKycId] = useState<string | null>(null);
 
   useEffect(() => {
     fetchApplications();
@@ -132,6 +133,7 @@ export function ComplianceReviewQueue() {
   };
 
   return (
+    <>
     <div className="p-6">
       <div className="mb-6">
         <h1 className="text-3xl font-bold text-slate-900">Review Queue</h1>
@@ -205,31 +207,33 @@ export function ComplianceReviewQueue() {
                           </p>
                         )}
                       </div>
-                      {canReview && (
-                        <div className="flex space-x-2 ml-4">
-                          <button
-                            onClick={() => setSelectedItem(app.id)}
-                            className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition"
-                            title="View Details"
-                          >
-                            <Eye className="w-5 h-5" />
-                          </button>
-                          <button
-                            onClick={() => handleKycReview(app.id, 'verified')}
-                            className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition"
-                            title="Approve"
-                          >
-                            <CheckCircle className="w-5 h-5" />
-                          </button>
-                          <button
-                            onClick={() => handleKycReview(app.id, 'rejected')}
-                            className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition"
-                            title="Reject"
-                          >
-                            <XCircle className="w-5 h-5" />
-                          </button>
-                        </div>
-                      )}
+                      <div className="flex space-x-2 ml-4">
+                        <button
+                          onClick={() => setSelectedKycId(app.id)}
+                          className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition"
+                          title="View Details"
+                        >
+                          <Eye className="w-5 h-5" />
+                        </button>
+                        {canReview && (
+                          <>
+                            <button
+                              onClick={() => handleKycReview(app.id, 'verified')}
+                              className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition"
+                              title="Approve"
+                            >
+                              <CheckCircle className="w-5 h-5" />
+                            </button>
+                            <button
+                              onClick={() => handleKycReview(app.id, 'rejected')}
+                              className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition"
+                              title="Reject"
+                            >
+                              <XCircle className="w-5 h-5" />
+                            </button>
+                          </>
+                        )}
+                      </div>
                     </div>
                   </div>
                 ))
@@ -289,13 +293,6 @@ export function ComplianceReviewQueue() {
                       {canReview && (
                         <div className="flex space-x-2 ml-4">
                           <button
-                            onClick={() => setSelectedItem(app.id)}
-                            className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition"
-                            title="View Details"
-                          >
-                            <Eye className="w-5 h-5" />
-                          </button>
-                          <button
                             onClick={() => handleLoanReview(app.id, 'approved')}
                             className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition"
                             title="Approve"
@@ -320,5 +317,15 @@ export function ComplianceReviewQueue() {
         </div>
       </div>
     </div>
+
+    {selectedKycId && (
+      <KYCDetailView
+        kycId={selectedKycId}
+        onClose={() => setSelectedKycId(null)}
+        onApprove={(id) => handleKycReview(id, 'verified')}
+        onReject={(id) => handleKycReview(id, 'rejected')}
+      />
+    )}
+    </>
   );
 }
