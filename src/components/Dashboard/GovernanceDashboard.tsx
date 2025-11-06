@@ -3,6 +3,7 @@ import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
 import { AlertTriangle, CheckCircle, Clock, TrendingUp, Users, FileText, AlertCircle } from 'lucide-react';
 import type { AlertSeverity } from '../../lib/database.types';
+import { AuditDataView } from './AuditDataView';
 
 interface Alert {
   id: string;
@@ -40,6 +41,10 @@ export function GovernanceDashboard() {
   });
   const [alerts, setAlerts] = useState<Alert[]>([]);
   const [loading, setLoading] = useState(true);
+
+  if (profile?.role === 'internal_auditor') {
+    return <AuditDataView />;
+  }
 
   useEffect(() => {
     fetchDashboardData();
