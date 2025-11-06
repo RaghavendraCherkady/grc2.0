@@ -258,10 +258,12 @@ async function sendReminderNotification(
 
   const variables = {
     customerName,
-    loanId: emi.loan_application_id,
+    loanId: emi.loan_application_id.substring(0, 8),
     emiNumber: emi.emi_number,
     amount: emi.amount.toLocaleString('en-IN'),
     dueDate,
+    formattedAmount: `rupees ${Math.floor(emi.amount)}`,
+    urgency: daysUntilDue === 0 ? "overdue" : daysUntilDue === 1 ? "urgent" : "normal",
   };
 
   const response = await fetch(`${supabaseUrl}/functions/v1/send-notification`, {

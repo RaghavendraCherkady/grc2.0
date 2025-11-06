@@ -146,7 +146,8 @@ Deno.serve(async (req: Request) => {
               userId,
               notificationType,
               entityType,
-              entityId
+              entityId,
+              profile.full_name || variables.customerName || "Customer"
             );
             break;
         }
@@ -263,7 +264,8 @@ async function sendVoice(
   userId: string,
   notificationType: string,
   entityType?: string,
-  entityId?: string
+  entityId?: string,
+  customerName?: string
 ) {
   if (!to) {
     return { success: false, error: "Phone number not available" };
@@ -274,7 +276,7 @@ async function sendVoice(
       "Authorization": `Bearer ${supabaseKey}`,
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ to, message, userId, notificationType, entityType, entityId }),
+    body: JSON.stringify({ to, message, userId, notificationType, entityType, entityId, customerName }),
   });
   return await response.json();
 }

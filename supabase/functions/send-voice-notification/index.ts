@@ -7,6 +7,12 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Client-Info, Apikey",
 };
 
+const VAPI_API_KEY = "465ae04e-f94a-42a6-bbc3-98e5bf902c4f";
+const VAPI_ASSISTANTS = {
+  congratulations: "22bef876-2b3a-4946-a30c-1ca609922f1b",
+  loan_reminder: "af08fe04-fa7f-48ad-8e68-185fbf92ef15",
+};
+
 interface VoiceRequest {
   to: string;
   message: string;
@@ -14,6 +20,7 @@ interface VoiceRequest {
   notificationType: string;
   entityType?: string;
   entityId?: string;
+  customerName?: string;
 }
 
 Deno.serve(async (req: Request) => {
@@ -27,13 +34,10 @@ Deno.serve(async (req: Request) => {
   try {
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-    const twilioAccountSid = Deno.env.get("TWILIO_ACCOUNT_SID");
-    const twilioAuthToken = Deno.env.get("TWILIO_AUTH_TOKEN");
-    const twilioPhoneNumber = Deno.env.get("TWILIO_PHONE_NUMBER");
     const supabase = createClient(supabaseUrl, supabaseKey);
 
     const voiceRequest: VoiceRequest = await req.json();
-    const { to, message, userId, notificationType, entityType, entityId } = voiceRequest;
+    const { to, message, userId, notificationType, entityType, entityId, customerName } = voiceRequest;
 
     if (!to || !message || !userId) {
       throw new Error("Missing required fields: to, message, userId");
@@ -44,8 +48,6 @@ Deno.serve(async (req: Request) => {
     if (cleanPhone.length === 10) {
       cleanPhone = `+91${cleanPhone}`;
     } else if (!cleanPhone.startsWith("+")) {
-      cleanPhone = `+${cleanPhone}`;
-    } else if (!cleanPhone.startsWith("+91")) {
       cleanPhone = `+${cleanPhone}`;
     }
 
@@ -73,62 +75,58 @@ Deno.serve(async (req: Request) => {
 
     let voiceSent = false;
     let errorMessage = null;
+    let callId = null;
 
-    // Make voice call using Twilio if credentials are available
-    if (twilioAccountSid && twilioAuthToken && twilioPhoneNumber) {
-      try {
-        const twilioUrl = `https://api.twilio.com/2010-04-01/Accounts/${twilioAccountSid}/Calls.json`;
-        const authHeader = btoa(`${twilioAccountSid}:${twilioAuthToken}`);
+    try {
+      // Determine which Vapi assistant to use based on notification type
+      let assistantId = VAPI_ASSISTANTS.loan_reminder; // Default
+      
+      if (notificationType.includes("approved") || notificationType.includes("kyc_approved") || notificationType.includes("loan_approved")) {
+        assistantId = VAPI_ASSISTANTS.congratulations;
+      }
 
-        // Create TwiML for voice message
-        const twiml = `<?xml version="1.0" encoding="UTF-8"?>
-<Response>
-  <Say voice="woman" language="en-IN">${escapeXml(message)}</Say>
-  <Pause length="1"/>
-  <Say voice="woman" language="en-IN">Press any key to repeat this message.</Say>
-  <Gather numDigits="1" timeout="5">
-    <Say voice="woman" language="en-IN">${escapeXml(message)}</Say>
-  </Gather>
-</Response>`;
+      // Prepare assistant overrides with custom context
+      const assistantOverrides = {
+        variableValues: {
+          customerName: customerName || "Customer",
+          message: message,
+          notificationType: notificationType,
+        },
+        firstMessage: message,
+      };
 
-        // URL-encode the TwiML
-        const twimlUrl = `data:application/xml,${encodeURIComponent(twiml)}`;
-
-        const formData = new URLSearchParams({
-          To: cleanPhone,
-          From: twilioPhoneNumber,
-          Twiml: twiml,
-        });
-
-        const twilioResponse = await fetch(twilioUrl, {
-          method: "POST",
-          headers: {
-            "Authorization": `Basic ${authHeader}`,
-            "Content-Type": "application/x-www-form-urlencoded",
+      // Make voice call using Vapi API
+      const vapiResponse = await fetch("https://api.vapi.ai/call/phone", {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${VAPI_API_KEY}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          assistantId: assistantId,
+          customer: {
+            number: cleanPhone,
+            name: customerName,
           },
-          body: formData.toString(),
-        });
+          phoneNumberId: null,
+          assistantOverrides: assistantOverrides,
+        }),
+      });
 
-        if (twilioResponse.ok) {
-          voiceSent = true;
-          const responseData = await twilioResponse.json();
-          console.log("Voice call initiated via Twilio:", responseData.sid);
-        } else {
-          const errorData = await twilioResponse.text();
-          errorMessage = `Twilio API error: ${errorData}`;
-          console.error(errorMessage);
-        }
-      } catch (error: any) {
-        errorMessage = `Voice call failed: ${error.message}`;
+      if (vapiResponse.ok) {
+        const responseData = await vapiResponse.json();
+        voiceSent = true;
+        callId = responseData.id;
+        console.log("Voice call initiated via Vapi:", callId);
+        console.log("Assistant used:", assistantId === VAPI_ASSISTANTS.congratulations ? "Congratulations" : "Loan Reminder");
+      } else {
+        const errorData = await vapiResponse.text();
+        errorMessage = `Vapi API error: ${errorData}`;
         console.error(errorMessage);
       }
-    } else {
-      // Fallback: Log voice call (for development/testing)
-      console.log("=== VOICE NOTIFICATION ===");
-      console.log("To:", cleanPhone);
-      console.log("Message:", message);
-      console.log("=========================");
-      voiceSent = true;
+    } catch (error: any) {
+      errorMessage = `Voice call failed: ${error.message}`;
+      console.error(errorMessage);
     }
 
     // Update notification status
@@ -138,6 +136,11 @@ Deno.serve(async (req: Request) => {
         status: voiceSent ? "sent" : "failed",
         sent_at: voiceSent ? new Date().toISOString() : null,
         error_message: errorMessage,
+        metadata: {
+          to: cleanPhone,
+          vapi_call_id: callId,
+          assistant_id: voiceSent ? (notificationType.includes("approved") ? VAPI_ASSISTANTS.congratulations : VAPI_ASSISTANTS.loan_reminder) : null,
+        },
       })
       .eq("id", notificationId);
 
@@ -145,7 +148,8 @@ Deno.serve(async (req: Request) => {
       JSON.stringify({
         success: voiceSent,
         notificationId,
-        message: voiceSent ? "Voice call initiated successfully" : "Voice call failed",
+        callId,
+        message: voiceSent ? "Voice call initiated successfully via Vapi" : "Voice call failed",
         error: errorMessage,
         phone: cleanPhone,
       }),
@@ -173,12 +177,3 @@ Deno.serve(async (req: Request) => {
     );
   }
 });
-
-function escapeXml(unsafe: string): string {
-  return unsafe
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&apos;");
-}
