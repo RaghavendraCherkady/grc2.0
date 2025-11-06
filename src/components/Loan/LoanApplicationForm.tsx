@@ -1,16 +1,19 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
 import { Upload, CheckCircle, AlertCircle, TrendingUp } from 'lucide-react';
 import type { KycStatus } from '../../lib/database.types';
 import { monitoring } from '../../lib/monitoring';
 import { createAuditLog } from '../../lib/auditLog';
+import { KYCSelector } from './KYCSelector';
 
 interface KYCApplication {
   id: string;
   customer_name: string;
   customer_email: string;
+  customer_phone: string;
   status: KycStatus;
+  submitted_at: string;
 }
 
 const LOAN_TYPES = ['Personal Loan', 'Home Loan', 'Car Loan', 'Business Loan', 'Education Loan'];
@@ -18,12 +21,12 @@ const EMPLOYMENT_TYPES = ['Salaried', 'Self-Employed', 'Business Owner', 'Profes
 
 export function LoanApplicationForm() {
   const { user } = useAuth();
-  const [step, setStep] = useState(1);
+  const [step, setStep] = useState(0);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState('');
   const [kycApplication, setKycApplication] = useState<KYCApplication | null>(null);
-  const [loadingKyc, setLoadingKyc] = useState(true);
+  const [showKycSelector, setShowKycSelector] = useState(true);
 
   const [formData, setFormData] = useState({
     loanType: '',
@@ -39,24 +42,16 @@ export function LoanApplicationForm() {
     creditBureauConsent: false,
   });
 
-  useEffect(() => {
-    fetchKycApplication();
-  }, [user]);
+  const handleKycSelect = (kyc: KYCApplication) => {
+    setKycApplication(kyc);
+    setShowKycSelector(false);
+    setStep(1);
+  };
 
-  const fetchKycApplication = async () => {
-    if (!user) return;
-
-    const { data, error } = await supabase
-      .from('kyc_applications')
-      .select('id, customer_name, customer_email, status')
-      .eq('created_by', user.id)
-      .eq('status', 'verified')
-      .maybeSingle();
-
-    if (!error && data) {
-      setKycApplication(data);
-    }
-    setLoadingKyc(false);
+  const handleCancelKycSelection = () => {
+    setShowKycSelector(true);
+    setKycApplication(null);
+    setStep(0);
   };
 
   const handleFileUpload = async (file: File, path: string): Promise<string> => {
@@ -183,28 +178,12 @@ export function LoanApplicationForm() {
     }
   };
 
-  if (loadingKyc) {
+  if (showKycSelector || !kycApplication) {
     return (
-      <div className="max-w-2xl mx-auto p-6">
-        <div className="bg-white rounded-xl shadow-lg p-8 text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-4 text-slate-600">Loading...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (!kycApplication) {
-    return (
-      <div className="max-w-2xl mx-auto p-6">
-        <div className="bg-amber-50 border-2 border-amber-200 rounded-xl p-8 text-center">
-          <AlertCircle className="w-16 h-16 text-amber-600 mx-auto mb-4" />
-          <h2 className="text-2xl font-bold text-amber-900 mb-2">KYC Verification Required</h2>
-          <p className="text-amber-700">
-            You need to complete KYC verification before applying for a loan. Please complete your KYC application first.
-          </p>
-        </div>
-      </div>
+      <KYCSelector
+        onSelect={handleKycSelect}
+        onCancel={() => window.history.back()}
+      />
     );
   }
 
@@ -234,12 +213,20 @@ export function LoanApplicationForm() {
   return (
     <div className="max-w-3xl mx-auto p-6">
       <div className="bg-white rounded-xl shadow-lg p-8">
-        <div className="flex items-center mb-6">
-          <TrendingUp className="w-8 h-8 text-blue-600 mr-3" />
-          <div>
-            <h2 className="text-2xl font-bold text-slate-900">Loan Application</h2>
-            <p className="text-sm text-slate-600">KYC Verified: {kycApplication.customer_name}</p>
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center">
+            <TrendingUp className="w-8 h-8 text-blue-600 mr-3" />
+            <div>
+              <h2 className="text-2xl font-bold text-slate-900">Loan Application</h2>
+              <p className="text-sm text-slate-600">Customer: {kycApplication.customer_name}</p>
+            </div>
           </div>
+          <button
+            onClick={handleCancelKycSelection}
+            className="px-4 py-2 text-sm border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50 transition"
+          >
+            Change Customer
+          </button>
         </div>
 
         <div className="flex items-center justify-between mb-8">
