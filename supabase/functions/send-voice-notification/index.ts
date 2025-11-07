@@ -95,7 +95,7 @@ Deno.serve(async (req: Request) => {
         firstMessage: message,
       };
 
-      // Make voice call using Vapi API
+      // Make voice call using Vapi API with pre-configured assistant
       const vapiResponse = await fetch("https://api.vapi.ai/call/phone", {
         method: "POST",
         headers: {
@@ -106,9 +106,7 @@ Deno.serve(async (req: Request) => {
           assistantId: assistantId,
           customer: {
             number: cleanPhone,
-          },
-          phoneNumber: {
-            twilioPhoneNumber: cleanPhone,
+            name: customerName,
           },
           assistantOverrides: assistantOverrides,
         }),
