@@ -7,9 +7,10 @@ import { GovernanceDashboard } from './components/Dashboard/GovernanceDashboard'
 import { ComplianceReviewQueue } from './components/Review/ComplianceReviewQueue';
 import { CommunicationLog } from './components/Notifications/CommunicationLog';
 import { NotificationPreferences } from './components/Notifications/NotificationPreferences';
-import { Shield, FileText, TrendingUp, LayoutDashboard, Clipboard, LogOut, Menu, X, Bell, Settings } from 'lucide-react';
+import { AuditorDashboard } from './components/Audit/AuditorDashboard';
+import { Shield, FileText, TrendingUp, LayoutDashboard, Clipboard, LogOut, Menu, X, Bell, Settings, Search } from 'lucide-react';
 
-type View = 'dashboard' | 'kyc' | 'loan' | 'review' | 'communications' | 'notifications';
+type View = 'dashboard' | 'kyc' | 'loan' | 'review' | 'communications' | 'notifications' | 'audit';
 
 function AppContent() {
   const { user, profile, loading, signOut } = useAuth();
@@ -36,7 +37,13 @@ function AppContent() {
       id: 'dashboard',
       label: 'Dashboard',
       icon: <LayoutDashboard className="w-5 h-5" />,
-      roles: ['cco', 'internal_auditor', 'compliance_manager', 'system_admin'],
+      roles: ['cco', 'compliance_manager', 'system_admin'],
+    },
+    {
+      id: 'audit',
+      label: 'Audit Dashboard',
+      icon: <Search className="w-5 h-5" />,
+      roles: ['internal_auditor', 'cco', 'system_admin'],
     },
     {
       id: 'review',
@@ -184,6 +191,7 @@ function AppContent() {
 
       <main className="max-w-7xl mx-auto py-6">
         {currentView === 'dashboard' && <GovernanceDashboard />}
+        {currentView === 'audit' && <AuditorDashboard />}
         {currentView === 'review' && <ComplianceReviewQueue />}
         {currentView === 'kyc' && <KYCVerificationForm />}
         {currentView === 'loan' && <LoanApplicationForm />}
