@@ -9,9 +9,10 @@ import { CommunicationLog } from './components/Notifications/CommunicationLog';
 import { NotificationPreferences } from './components/Notifications/NotificationPreferences';
 import { AuditorDashboard } from './components/Audit/AuditorDashboard';
 import { VoiceCallDemo } from './components/Demo/VoiceCallDemo';
-import { Shield, FileText, TrendingUp, LayoutDashboard, Clipboard, LogOut, Menu, X, Bell, Settings, Search, Phone } from 'lucide-react';
+import { WebVoiceCallDemo } from './components/Demo/WebVoiceCallDemo';
+import { Shield, FileText, TrendingUp, LayoutDashboard, Clipboard, LogOut, Menu, X, Bell, Settings, Search, Phone, Headphones } from 'lucide-react';
 
-type View = 'dashboard' | 'kyc' | 'loan' | 'review' | 'communications' | 'notifications' | 'audit' | 'voice_demo';
+type View = 'dashboard' | 'kyc' | 'loan' | 'review' | 'communications' | 'notifications' | 'audit' | 'voice_demo' | 'web_voice';
 
 function AppContent() {
   const { user, profile, loading, signOut } = useAuth();
@@ -79,6 +80,11 @@ function AppContent() {
       id: 'voice_demo',
       label: 'Voice Call Demo',
       icon: <Phone className="w-5 h-5" />,
+    },
+    {
+      id: 'web_voice',
+      label: 'Web Voice Demo',
+      icon: <Headphones className="w-5 h-5" />,
     },
   ];
 
@@ -204,6 +210,7 @@ function AppContent() {
         {currentView === 'communications' && <CommunicationLog />}
         {currentView === 'notifications' && <NotificationPreferences />}
         {currentView === 'voice_demo' && <VoiceCallDemo />}
+        {currentView === 'web_voice' && <WebVoiceCallDemo />}
       </main>
 
       <footer className="bg-white border-t border-slate-200 mt-12">
