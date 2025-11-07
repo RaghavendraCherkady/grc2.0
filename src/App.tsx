@@ -8,9 +8,10 @@ import { ComplianceReviewQueue } from './components/Review/ComplianceReviewQueue
 import { CommunicationLog } from './components/Notifications/CommunicationLog';
 import { NotificationPreferences } from './components/Notifications/NotificationPreferences';
 import { AuditorDashboard } from './components/Audit/AuditorDashboard';
-import { Shield, FileText, TrendingUp, LayoutDashboard, Clipboard, LogOut, Menu, X, Bell, Settings, Search } from 'lucide-react';
+import { VoiceCallDemo } from './components/Demo/VoiceCallDemo';
+import { Shield, FileText, TrendingUp, LayoutDashboard, Clipboard, LogOut, Menu, X, Bell, Settings, Search, Phone } from 'lucide-react';
 
-type View = 'dashboard' | 'kyc' | 'loan' | 'review' | 'communications' | 'notifications' | 'audit';
+type View = 'dashboard' | 'kyc' | 'loan' | 'review' | 'communications' | 'notifications' | 'audit' | 'voice_demo';
 
 function AppContent() {
   const { user, profile, loading, signOut } = useAuth();
@@ -73,6 +74,11 @@ function AppContent() {
       label: 'Notification Settings',
       icon: <Settings className="w-5 h-5" />,
       excludeRoles: ['cco', 'internal_auditor', 'compliance_manager'],
+    },
+    {
+      id: 'voice_demo',
+      label: 'Voice Call Demo',
+      icon: <Phone className="w-5 h-5" />,
     },
   ];
 
@@ -197,6 +203,7 @@ function AppContent() {
         {currentView === 'loan' && <LoanApplicationForm />}
         {currentView === 'communications' && <CommunicationLog />}
         {currentView === 'notifications' && <NotificationPreferences />}
+        {currentView === 'voice_demo' && <VoiceCallDemo />}
       </main>
 
       <footer className="bg-white border-t border-slate-200 mt-12">
