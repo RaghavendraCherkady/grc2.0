@@ -104,10 +104,11 @@ Deno.serve(async (req: Request) => {
         },
         body: JSON.stringify({
           assistantId: assistantId,
-          phoneNumber: cleanPhone,
           customer: {
             number: cleanPhone,
-            name: customerName,
+          },
+          phoneNumber: {
+            twilioPhoneNumber: cleanPhone,
           },
           assistantOverrides: assistantOverrides,
         }),
