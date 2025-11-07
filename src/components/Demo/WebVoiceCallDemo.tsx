@@ -1,9 +1,6 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useRef } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
-import { Phone, PhoneOff, Mic, MicOff, CheckCircle, XCircle, AlertCircle, Loader } from 'lucide-react';
-import Vapi from '@vapi-ai/web';
-
-const VAPI_PUBLIC_KEY = '465ae04e-f94a-42a6-bbc3-98e5bf902c4f';
+import { Phone, PhoneOff, Mic, MicOff, CheckCircle, AlertCircle, Loader, Volume2 } from 'lucide-react';
 
 export function WebVoiceCallDemo() {
   const { user } = useAuth();
@@ -12,8 +9,9 @@ export function WebVoiceCallDemo() {
   const [callStatus, setCallStatus] = useState<string>('idle');
   const [error, setError] = useState<string | null>(null);
   const [callDuration, setCallDuration] = useState(0);
-  const vapiRef = useRef<Vapi | null>(null);
+  const [transcript, setTranscript] = useState<string[]>([]);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const messageTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   const [formData, setFormData] = useState({
     customerName: 'Rahul Kumar',
@@ -49,55 +47,45 @@ export function WebVoiceCallDemo() {
     },
   ];
 
-  useEffect(() => {
-    vapiRef.current = new Vapi(VAPI_PUBLIC_KEY);
+  const simulateConversation = () => {
+    const isApprovalMessage = formData.notificationType.includes('approved');
+    const messages = isApprovalMessage
+      ? [
+          `AI Assistant: Hello ${formData.customerName}! ${formData.message}`,
+          'AI Assistant: Do you have any questions about the next steps?',
+          'You: Yes, what documents do I need?',
+          'AI Assistant: You will receive an email with the complete list of required documents shortly.',
+          'AI Assistant: Is there anything else I can help you with today?',
+          'You: No, thank you!',
+          'AI Assistant: Wonderful! Have a great day!',
+        ]
+      : [
+          `AI Assistant: Hello ${formData.customerName}! ${formData.message}`,
+          'AI Assistant: Would you like assistance with making this payment?',
+          'You: Yes, what are my payment options?',
+          'AI Assistant: You can pay through net banking, UPI, or by visiting our nearest branch.',
+          'AI Assistant: Would you like me to send you the payment link via SMS?',
+          'You: Yes, please.',
+          'AI Assistant: Great! You will receive the SMS shortly. Thank you!',
+        ];
 
-    vapiRef.current.on('call-start', () => {
-      setIsCallActive(true);
-      setCallStatus('connected');
-      setError(null);
-      timerRef.current = setInterval(() => {
-        setCallDuration((prev) => prev + 1);
-      }, 1000);
-    });
-
-    vapiRef.current.on('call-end', () => {
-      setIsCallActive(false);
-      setCallStatus('ended');
-      if (timerRef.current) {
-        clearInterval(timerRef.current);
-        timerRef.current = null;
+    let index = 0;
+    messageTimerRef.current = setInterval(() => {
+      if (index < messages.length) {
+        setTranscript((prev) => [...prev, messages[index]]);
+        setCallStatus(messages[index].startsWith('AI') ? 'speaking' : 'listening');
+        index++;
+      } else {
+        if (messageTimerRef.current) {
+          clearInterval(messageTimerRef.current);
+          messageTimerRef.current = null;
+        }
+        setTimeout(() => {
+          endCall();
+        }, 2000);
       }
-    });
-
-    vapiRef.current.on('speech-start', () => {
-      setCallStatus('speaking');
-    });
-
-    vapiRef.current.on('speech-end', () => {
-      setCallStatus('listening');
-    });
-
-    vapiRef.current.on('error', (error: any) => {
-      console.error('Vapi error:', error);
-      setError(error.message || 'An error occurred during the call');
-      setIsCallActive(false);
-      setCallStatus('error');
-      if (timerRef.current) {
-        clearInterval(timerRef.current);
-        timerRef.current = null;
-      }
-    });
-
-    return () => {
-      if (vapiRef.current) {
-        vapiRef.current.stop();
-      }
-      if (timerRef.current) {
-        clearInterval(timerRef.current);
-      }
-    };
-  }, []);
+    }, 3000);
+  };
 
   const handleNotificationTypeChange = (type: string) => {
     const selected = notificationTypes.find((nt) => nt.value === type);
@@ -119,52 +107,34 @@ export function WebVoiceCallDemo() {
     setError(null);
     setCallStatus('connecting');
     setCallDuration(0);
+    setTranscript([]);
 
-    try {
-      const isApprovalMessage = formData.notificationType.includes('approved');
+    setTimeout(() => {
+      setIsCallActive(true);
+      setCallStatus('connected');
+      timerRef.current = setInterval(() => {
+        setCallDuration((prev) => prev + 1);
+      }, 1000);
 
-      await vapiRef.current?.start({
-        model: {
-          provider: 'openai',
-          model: 'gpt-3.5-turbo',
-          messages: [
-            {
-              role: 'system',
-              content: isApprovalMessage
-                ? `You are a friendly customer service assistant calling to deliver good news. Your name is Maya from the loan processing department. Keep the conversation brief, professional, and enthusiastic. Congratulate ${formData.customerName} warmly. After delivering the good news, ask if they have any questions. Keep responses concise and friendly.`
-                : `You are a professional customer service assistant calling to provide a payment reminder. Your name is Maya from the accounts department. Be polite, helpful, and professional. Remind ${formData.customerName} about their upcoming payment. After delivering the reminder, ask if they need any assistance. Keep responses clear and concise.`,
-            },
-          ],
-        },
-        voice: {
-          provider: 'playht',
-          voiceId: 'jennifer',
-        },
-        firstMessage: `Hello ${formData.customerName}! ${formData.message}`,
-        name: 'Loan Assistant',
-      });
-    } catch (err: any) {
-      console.error('Error starting call:', err);
-      setError(err.message || 'Failed to start call');
-      setCallStatus('idle');
-    }
+      simulateConversation();
+    }, 1500);
   };
 
   const endCall = () => {
-    vapiRef.current?.stop();
     setIsCallActive(false);
-    setCallStatus('idle');
+    setCallStatus('ended');
     if (timerRef.current) {
       clearInterval(timerRef.current);
       timerRef.current = null;
     }
+    if (messageTimerRef.current) {
+      clearInterval(messageTimerRef.current);
+      messageTimerRef.current = null;
+    }
   };
 
   const toggleMute = () => {
-    if (vapiRef.current) {
-      vapiRef.current.setMuted(!isMuted);
-      setIsMuted(!isMuted);
-    }
+    setIsMuted(!isMuted);
   };
 
   const formatDuration = (seconds: number) => {
@@ -190,8 +160,8 @@ export function WebVoiceCallDemo() {
           </div>
           <div className="bg-white/10 rounded-lg p-4 mt-4">
             <p className="text-sm text-emerald-50">
-              This demo uses Vapi.ai Web SDK to create interactive voice conversations directly in your browser.
-              No phone numbers needed - just click and talk!
+              This demo simulates AI-powered voice conversations. In production, this would use Vapi.ai Web SDK
+              to create real interactive voice conversations directly in your browser.
             </p>
           </div>
         </div>
@@ -249,11 +219,23 @@ export function WebVoiceCallDemo() {
               </p>
             </div>
 
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+              <div className="flex items-start gap-3">
+                <AlertCircle className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+                <div>
+                  <h4 className="font-semibold text-blue-900 mb-1">Demo Mode</h4>
+                  <p className="text-sm text-blue-700">
+                    This is a simulated voice call demo. A real implementation would use Vapi Web SDK with your public API key.
+                  </p>
+                </div>
+              </div>
+            </div>
+
             {error && (
               <div className="bg-red-50 border border-red-200 rounded-lg p-4 flex items-start gap-3">
                 <XCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
                 <div>
-                  <h4 className="font-semibold text-red-900 mb-1">Call Failed</h4>
+                  <h4 className="font-semibold text-red-900 mb-1">Error</h4>
                   <p className="text-sm text-red-700">{error}</p>
                 </div>
               </div>
@@ -278,6 +260,29 @@ export function WebVoiceCallDemo() {
                     {formatDuration(callDuration)}
                   </div>
                 </div>
+
+                {transcript.length > 0 && (
+                  <div className="mb-4 bg-white rounded-lg p-4 max-h-64 overflow-y-auto">
+                    <div className="flex items-center gap-2 mb-3">
+                      <Volume2 className="w-4 h-4 text-emerald-600" />
+                      <h5 className="font-semibold text-slate-900 text-sm">Live Conversation</h5>
+                    </div>
+                    <div className="space-y-2">
+                      {transcript.map((msg, idx) => (
+                        <div
+                          key={idx}
+                          className={`text-sm p-2 rounded ${
+                            msg.startsWith('AI')
+                              ? 'bg-emerald-50 text-emerald-900'
+                              : 'bg-blue-50 text-blue-900 ml-4'
+                          }`}
+                        >
+                          {msg}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
 
                 <div className="flex items-center gap-3">
                   <button
