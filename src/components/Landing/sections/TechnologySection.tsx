@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Database, Cpu, Cloud, Lock, Zap, Globe } from 'lucide-react';
+import { Database, Cpu, Cloud, Lock, Zap, Globe, Shield } from 'lucide-react';
 
 export function TechnologySection() {
   const technologies = [
