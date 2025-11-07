@@ -215,7 +215,7 @@ export function LoanApplicationForm() {
       <div className="bg-white rounded-xl shadow-lg p-8">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center">
-            <TrendingUp className="w-8 h-8 text-blue-600 mr-3" />
+            <TrendingUp className="w-8 h-8 text-[#0A4A55] mr-3" />
             <div>
               <h2 className="text-2xl font-bold text-slate-900">Loan Application</h2>
               <p className="text-sm text-slate-600">Customer: {kycApplication.customer_name}</p>
@@ -230,26 +230,26 @@ export function LoanApplicationForm() {
         </div>
 
         <div className="flex items-center justify-between mb-8">
-          <div className={`flex items-center ${step >= 1 ? 'text-blue-600' : 'text-slate-400'}`}>
-            <div className={`w-8 h-8 rounded-full flex items-center justify-center ${step >= 1 ? 'bg-blue-600 text-white' : 'bg-slate-200'}`}>
+          <div className={`flex items-center ${step >= 1 ? 'text-[#0A4A55]' : 'text-slate-400'}`}>
+            <div className={`w-8 h-8 rounded-full flex items-center justify-center ${step >= 1 ? 'bg-gradient-to-br from-[#0A4A55] to-[#106b7d] text-white' : 'bg-slate-200'}`}>
               1
             </div>
             <span className="ml-2 text-sm font-medium">Loan Details</span>
           </div>
-          <div className={`flex items-center ${step >= 2 ? 'text-blue-600' : 'text-slate-400'}`}>
-            <div className={`w-8 h-8 rounded-full flex items-center justify-center ${step >= 2 ? 'bg-blue-600 text-white' : 'bg-slate-200'}`}>
+          <div className={`flex items-center ${step >= 2 ? 'text-[#0A4A55]' : 'text-slate-400'}`}>
+            <div className={`w-8 h-8 rounded-full flex items-center justify-center ${step >= 2 ? 'bg-gradient-to-br from-[#0A4A55] to-[#106b7d] text-white' : 'bg-slate-200'}`}>
               2
             </div>
             <span className="ml-2 text-sm font-medium">Employment</span>
           </div>
-          <div className={`flex items-center ${step >= 3 ? 'text-blue-600' : 'text-slate-400'}`}>
-            <div className={`w-8 h-8 rounded-full flex items-center justify-center ${step >= 3 ? 'bg-blue-600 text-white' : 'bg-slate-200'}`}>
+          <div className={`flex items-center ${step >= 3 ? 'text-[#0A4A55]' : 'text-slate-400'}`}>
+            <div className={`w-8 h-8 rounded-full flex items-center justify-center ${step >= 3 ? 'bg-gradient-to-br from-[#0A4A55] to-[#106b7d] text-white' : 'bg-slate-200'}`}>
               3
             </div>
             <span className="ml-2 text-sm font-medium">Financials</span>
           </div>
-          <div className={`flex items-center ${step >= 4 ? 'text-blue-600' : 'text-slate-400'}`}>
-            <div className={`w-8 h-8 rounded-full flex items-center justify-center ${step >= 4 ? 'bg-blue-600 text-white' : 'bg-slate-200'}`}>
+          <div className={`flex items-center ${step >= 4 ? 'text-[#0A4A55]' : 'text-slate-400'}`}>
+            <div className={`w-8 h-8 rounded-full flex items-center justify-center ${step >= 4 ? 'bg-gradient-to-br from-[#0A4A55] to-[#106b7d] text-white' : 'bg-slate-200'}`}>
               4
             </div>
             <span className="ml-2 text-sm font-medium">Consent</span>
@@ -404,7 +404,7 @@ export function LoanApplicationForm() {
                   <p className="text-sm text-blue-800">
                     <span className="font-semibold">Estimated DTI Ratio:</span> {calculateDTI()}%
                   </p>
-                  <p className="text-xs text-blue-600 mt-1">
+                  <p className="text-xs text-[#0A4A55] mt-1">
                     Lower DTI ratios indicate better creditworthiness
                   </p>
                 </div>
@@ -426,7 +426,7 @@ export function LoanApplicationForm() {
                     checked={formData.creditBureauConsent}
                     onChange={(e) => setFormData({ ...formData, creditBureauConsent: e.target.checked })}
                     required
-                    className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500 mt-1"
+                    className="w-4 h-4 text-[#0A4A55] rounded focus:ring-2 focus:ring-blue-500 mt-1"
                   />
                   <label htmlFor="consent" className="ml-3 text-sm text-slate-700">
                     I hereby authorize NOVA-GRC and its representatives to retrieve my credit history and score from CIBIL and other credit information companies for the purpose of processing my loan application. I understand that this information will be used to assess my creditworthiness.
@@ -468,7 +468,7 @@ export function LoanApplicationForm() {
               <button
                 type="button"
                 onClick={() => setStep(step + 1)}
-                className="ml-auto px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+                className="ml-auto px-6 py-3 bg-gradient-to-br from-[#0A4A55] to-[#106b7d] text-white rounded-lg hover:shadow-xl hover:scale-[1.02] transition"
               >
                 Next
               </button>
@@ -476,7 +476,7 @@ export function LoanApplicationForm() {
               <button
                 type="submit"
                 disabled={loading || !formData.creditBureauConsent}
-                className="ml-auto px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                className="ml-auto px-6 py-3 bg-gradient-to-br from-[#0A4A55] to-[#106b7d] text-white rounded-lg hover:shadow-xl hover:scale-[1.02] transition disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {loading ? 'Submitting...' : 'Submit Application'}
               </button>

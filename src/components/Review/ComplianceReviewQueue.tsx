@@ -147,7 +147,7 @@ export function ComplianceReviewQueue() {
               onClick={() => setActiveTab('kyc')}
               className={`px-6 py-4 font-medium text-sm transition ${
                 activeTab === 'kyc'
-                  ? 'text-blue-600 border-b-2 border-blue-600'
+                  ? 'text-[#0A4A55] border-b-2 border-[#0A4A55]'
                   : 'text-slate-600 hover:text-slate-900'
               }`}
             >
@@ -160,7 +160,7 @@ export function ComplianceReviewQueue() {
               onClick={() => setActiveTab('loans')}
               className={`px-6 py-4 font-medium text-sm transition ${
                 activeTab === 'loans'
-                  ? 'text-blue-600 border-b-2 border-blue-600'
+                  ? 'text-[#0A4A55] border-b-2 border-[#0A4A55]'
                   : 'text-slate-600 hover:text-slate-900'
               }`}
             >
@@ -175,7 +175,7 @@ export function ComplianceReviewQueue() {
         <div className="p-6">
           {loading ? (
             <div className="text-center py-12">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#0A4A55] mx-auto"></div>
               <p className="mt-4 text-slate-600">Loading applications...</p>
             </div>
           ) : activeTab === 'kyc' ? (
@@ -210,7 +210,7 @@ export function ComplianceReviewQueue() {
                       <div className="flex space-x-2 ml-4">
                         <button
                           onClick={() => setSelectedKycId(app.id)}
-                          className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition"
+                          className="p-2 text-[#0A4A55] hover:bg-blue-50 rounded-lg transition"
                           title="View Details"
                         >
                           <Eye className="w-5 h-5" />

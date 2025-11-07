@@ -73,7 +73,7 @@ export function SystemStatus() {
   if (loading) {
     return (
       <div className="p-6">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#0A4A55] mx-auto"></div>
       </div>
     );
   }
@@ -108,7 +108,7 @@ export function SystemStatus() {
         <div className="bg-white rounded-lg border border-slate-200 p-4">
           <div className="flex items-center gap-3 mb-3">
             <div className="p-2 bg-blue-100 rounded-lg">
-              <Database className="w-6 h-6 text-blue-600" />
+              <Database className="w-6 h-6 text-[#0A4A55]" />
             </div>
             <div>
               <h3 className="font-semibold text-slate-900">Database</h3>
@@ -176,7 +176,7 @@ export function SystemStatus() {
 
       <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
         <div className="flex items-start gap-3">
-          <Activity className="w-5 h-5 text-blue-600 mt-0.5" />
+          <Activity className="w-5 h-5 text-[#0A4A55] mt-0.5" />
           <div>
             <h3 className="font-semibold text-blue-900 mb-1">Monitoring Active</h3>
             <p className="text-sm text-blue-800">

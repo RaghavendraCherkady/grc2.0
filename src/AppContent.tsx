@@ -23,7 +23,7 @@ export function AppContent() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-50">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-blue-600 mx-auto"></div>
+          <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-[#0A4A55] mx-auto"></div>
           <p className="mt-4 text-slate-600 font-medium">Loading...</p>
         </div>
       </div>
@@ -109,7 +109,7 @@ export function AppContent() {
           <div className="flex justify-between h-16">
             <div className="flex items-center">
               <div className="flex items-center">
-                <div className="bg-blue-600 p-2 rounded-lg">
+                <div className="bg-gradient-to-br from-[#0A4A55] to-[#106b7d] p-2 rounded-lg shadow-lg">
                   <Shield className="w-6 h-6 text-white" />
                 </div>
                 <div className="ml-3">
@@ -128,7 +128,7 @@ export function AppContent() {
                     }}
                     className={`flex items-center px-4 py-2 rounded-lg text-sm font-medium transition ${
                       currentView === item.id
-                        ? 'bg-blue-50 text-blue-600'
+                        ? 'bg-[#0A4A55]/10 text-[#0A4A55]'
                         : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
                     }`}
                   >
@@ -175,7 +175,7 @@ export function AppContent() {
                   }}
                   className={`w-full flex items-center px-4 py-3 rounded-lg text-sm font-medium transition ${
                     currentView === item.id
-                      ? 'bg-blue-50 text-blue-600'
+                      ? 'bg-[#0A4A55]/10 text-[#0A4A55]'
                       : 'text-slate-600 hover:bg-slate-50'
                   }`}
                 >

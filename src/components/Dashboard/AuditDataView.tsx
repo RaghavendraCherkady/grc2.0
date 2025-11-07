@@ -299,7 +299,7 @@ export function AuditDataView() {
             onClick={() => setActiveView('kyc')}
             className={`px-4 py-3 text-sm font-medium transition-colors ${
               activeView === 'kyc'
-                ? 'bg-blue-600 text-white'
+                ? 'bg-gradient-to-br from-[#0A4A55] to-[#106b7d] text-white'
                 : 'bg-white text-slate-700 hover:bg-slate-50'
             }`}
           >
@@ -310,7 +310,7 @@ export function AuditDataView() {
             onClick={() => setActiveView('loans')}
             className={`px-4 py-3 text-sm font-medium transition-colors ${
               activeView === 'loans'
-                ? 'bg-blue-600 text-white'
+                ? 'bg-gradient-to-br from-[#0A4A55] to-[#106b7d] text-white'
                 : 'bg-white text-slate-700 hover:bg-slate-50'
             }`}
           >
@@ -321,7 +321,7 @@ export function AuditDataView() {
             onClick={() => setActiveView('alerts')}
             className={`px-4 py-3 text-sm font-medium transition-colors ${
               activeView === 'alerts'
-                ? 'bg-blue-600 text-white'
+                ? 'bg-gradient-to-br from-[#0A4A55] to-[#106b7d] text-white'
                 : 'bg-white text-slate-700 hover:bg-slate-50'
             }`}
           >
@@ -332,7 +332,7 @@ export function AuditDataView() {
             onClick={() => setActiveView('audit_logs')}
             className={`px-4 py-3 text-sm font-medium transition-colors ${
               activeView === 'audit_logs'
-                ? 'bg-blue-600 text-white'
+                ? 'bg-gradient-to-br from-[#0A4A55] to-[#106b7d] text-white'
                 : 'bg-white text-slate-700 hover:bg-slate-50'
             }`}
           >
@@ -356,7 +356,7 @@ export function AuditDataView() {
           </div>
           <button
             onClick={exportToCSV}
-            className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
+            className="flex items-center px-4 py-2 bg-gradient-to-br from-[#0A4A55] to-[#106b7d] text-white rounded-lg hover:shadow-xl hover:scale-[1.02] transition-colors text-sm font-medium"
           >
             <Download className="w-4 h-4 mr-2" />
             Export CSV
@@ -366,7 +366,7 @@ export function AuditDataView() {
 
       {loading ? (
         <div className="text-center py-12">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#0A4A55] mx-auto"></div>
           <p className="text-slate-600 mt-4">Loading records...</p>
         </div>
       ) : (

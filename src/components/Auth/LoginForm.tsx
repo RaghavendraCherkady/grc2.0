@@ -35,7 +35,7 @@ export function LoginForm() {
       <div className="max-w-md w-full mx-4">
         <div className="bg-white rounded-2xl shadow-2xl p-8">
           <div className="flex justify-center mb-6">
-            <div className="bg-blue-600 p-4 rounded-xl">
+            <div className="bg-gradient-to-br from-[#0A4A55] to-[#106b7d] p-4 rounded-xl shadow-lg">
               <Shield className="w-10 h-10 text-white" />
             </div>
           </div>
@@ -59,7 +59,7 @@ export function LoginForm() {
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
                   required={isSignUp}
-                  className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                  className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#0A4A55] focus:border-transparent transition"
                   placeholder="Enter your full name"
                 />
               </div>
@@ -75,7 +75,7 @@ export function LoginForm() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#0A4A55] focus:border-transparent transition"
                 placeholder="Enter your email"
               />
             </div>
@@ -90,7 +90,7 @@ export function LoginForm() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#0A4A55] focus:border-transparent transition"
                 placeholder="Enter your password"
               />
             </div>
@@ -104,7 +104,7 @@ export function LoginForm() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg font-medium hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full bg-gradient-to-r from-[#0A4A55] to-[#106b7d] text-white py-3 px-4 rounded-lg font-medium hover:shadow-lg hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-[#0A4A55] focus:ring-offset-2 transition disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? 'Processing...' : isSignUp ? 'Sign Up' : 'Sign In'}
             </button>
@@ -113,7 +113,7 @@ export function LoginForm() {
           <div className="mt-6 text-center">
             <button
               onClick={() => setIsSignUp(!isSignUp)}
-              className="text-blue-600 hover:text-blue-700 text-sm font-medium transition"
+              className="text-[#0A4A55] hover:text-[#106b7d] text-sm font-medium transition"
             >
               {isSignUp ? 'Already have an account? Sign In' : "Don't have an account? Sign Up"}
             </button>

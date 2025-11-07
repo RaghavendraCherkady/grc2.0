@@ -240,7 +240,7 @@ export function AuditorDashboard() {
         </div>
         <button
           onClick={() => setShowObservationForm(true)}
-          className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+          className="flex items-center gap-2 px-4 py-2 bg-gradient-to-br from-[#0A4A55] to-[#106b7d] text-white rounded-lg hover:shadow-xl hover:scale-[1.02] transition"
         >
           <Plus className="w-5 h-5" />
           New Observation
@@ -256,7 +256,7 @@ export function AuditorDashboard() {
               : 'border-slate-200 bg-white hover:border-blue-300'
           }`}
         >
-          <FileText className={`w-6 h-6 mb-2 ${selectedType === 'kyc' ? 'text-blue-600' : 'text-slate-600'}`} />
+          <FileText className={`w-6 h-6 mb-2 ${selectedType === 'kyc' ? 'text-[#0A4A55]' : 'text-slate-600'}`} />
           <p className="font-semibold text-slate-900">KYC Records</p>
           <p className="text-sm text-slate-600 mt-1">{selectedType === 'kyc' ? stats.total : '—'}</p>
         </button>
@@ -269,7 +269,7 @@ export function AuditorDashboard() {
               : 'border-slate-200 bg-white hover:border-blue-300'
           }`}
         >
-          <TrendingUp className={`w-6 h-6 mb-2 ${selectedType === 'loan' ? 'text-blue-600' : 'text-slate-600'}`} />
+          <TrendingUp className={`w-6 h-6 mb-2 ${selectedType === 'loan' ? 'text-[#0A4A55]' : 'text-slate-600'}`} />
           <p className="font-semibold text-slate-900">Loan Records</p>
           <p className="text-sm text-slate-600 mt-1">{selectedType === 'loan' ? stats.total : '—'}</p>
         </button>
@@ -282,7 +282,7 @@ export function AuditorDashboard() {
               : 'border-slate-200 bg-white hover:border-blue-300'
           }`}
         >
-          <AlertTriangle className={`w-6 h-6 mb-2 ${selectedType === 'alert' ? 'text-blue-600' : 'text-slate-600'}`} />
+          <AlertTriangle className={`w-6 h-6 mb-2 ${selectedType === 'alert' ? 'text-[#0A4A55]' : 'text-slate-600'}`} />
           <p className="font-semibold text-slate-900">Alerts</p>
           <p className="text-sm text-slate-600 mt-1">{selectedType === 'alert' ? stats.total : '—'}</p>
         </button>
@@ -295,7 +295,7 @@ export function AuditorDashboard() {
               : 'border-slate-200 bg-white hover:border-blue-300'
           }`}
         >
-          <Activity className={`w-6 h-6 mb-2 ${selectedType === 'audit_log' ? 'text-blue-600' : 'text-slate-600'}`} />
+          <Activity className={`w-6 h-6 mb-2 ${selectedType === 'audit_log' ? 'text-[#0A4A55]' : 'text-slate-600'}`} />
           <p className="font-semibold text-slate-900">Audit Logs</p>
           <p className="text-sm text-slate-600 mt-1">{selectedType === 'audit_log' ? stats.total : '—'}</p>
         </button>
@@ -308,7 +308,7 @@ export function AuditorDashboard() {
               : 'border-slate-200 bg-white hover:border-blue-300'
           }`}
         >
-          <ClipboardList className={`w-6 h-6 mb-2 ${selectedType === 'observation' ? 'text-blue-600' : 'text-slate-600'}`} />
+          <ClipboardList className={`w-6 h-6 mb-2 ${selectedType === 'observation' ? 'text-[#0A4A55]' : 'text-slate-600'}`} />
           <p className="font-semibold text-slate-900">Observations</p>
           <p className="text-sm text-slate-600 mt-1">{selectedType === 'observation' ? stats.total : '—'}</p>
         </button>
@@ -371,7 +371,7 @@ export function AuditorDashboard() {
                     setDateFrom('');
                     setDateTo('');
                   }}
-                  className="text-blue-600 hover:text-blue-700 font-medium"
+                  className="text-[#0A4A55] hover:text-blue-700 font-medium"
                 >
                   Clear filters
                 </button>
@@ -383,7 +383,7 @@ export function AuditorDashboard() {
         <div className="divide-y divide-slate-200 max-h-[600px] overflow-y-auto">
           {loading ? (
             <div className="p-12 text-center">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#0A4A55] mx-auto"></div>
               <p className="mt-4 text-slate-600">Loading records...</p>
             </div>
           ) : filteredRecords.length === 0 ? (

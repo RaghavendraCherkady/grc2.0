@@ -105,7 +105,7 @@ export function NotificationPreferences() {
     return (
       <div className="max-w-4xl mx-auto p-6">
         <div className="bg-white rounded-xl shadow-lg p-8 text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#0A4A55] mx-auto"></div>
           <p className="mt-4 text-slate-600">Loading preferences...</p>
         </div>
       </div>
@@ -134,7 +134,7 @@ export function NotificationPreferences() {
               <div className="flex items-center justify-between p-4 bg-slate-50 rounded-lg">
                 <div className="flex items-center">
                   <div className="bg-blue-100 p-2 rounded-lg mr-3">
-                    <Mail className="w-6 h-6 text-blue-600" />
+                    <Mail className="w-6 h-6 text-[#0A4A55]" />
                   </div>
                   <div>
                     <p className="font-medium text-slate-900">Email Notifications</p>
@@ -148,7 +148,7 @@ export function NotificationPreferences() {
                     onChange={(e) => setPreferences({ ...preferences, email_enabled: e.target.checked })}
                     className="sr-only peer"
                   />
-                  <div className="w-11 h-6 bg-slate-300 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                  <div className="w-11 h-6 bg-slate-300 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gradient-to-br from-[#0A4A55] to-[#106b7d]"></div>
                 </label>
               </div>
 
@@ -169,7 +169,7 @@ export function NotificationPreferences() {
                     onChange={(e) => setPreferences({ ...preferences, sms_enabled: e.target.checked })}
                     className="sr-only peer"
                   />
-                  <div className="w-11 h-6 bg-slate-300 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                  <div className="w-11 h-6 bg-slate-300 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gradient-to-br from-[#0A4A55] to-[#106b7d]"></div>
                 </label>
               </div>
 
@@ -190,7 +190,7 @@ export function NotificationPreferences() {
                     onChange={(e) => setPreferences({ ...preferences, voice_enabled: e.target.checked })}
                     className="sr-only peer"
                   />
-                  <div className="w-11 h-6 bg-slate-300 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                  <div className="w-11 h-6 bg-slate-300 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gradient-to-br from-[#0A4A55] to-[#106b7d]"></div>
                 </label>
               </div>
             </div>
@@ -204,7 +204,7 @@ export function NotificationPreferences() {
                   type="checkbox"
                   checked={preferences.kyc_alerts}
                   onChange={(e) => setPreferences({ ...preferences, kyc_alerts: e.target.checked })}
-                  className="w-5 h-5 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
+                  className="w-5 h-5 text-[#0A4A55] rounded focus:ring-2 focus:ring-blue-500"
                 />
                 <div className="ml-3">
                   <p className="font-medium text-slate-900">KYC Alerts</p>
@@ -217,7 +217,7 @@ export function NotificationPreferences() {
                   type="checkbox"
                   checked={preferences.loan_alerts}
                   onChange={(e) => setPreferences({ ...preferences, loan_alerts: e.target.checked })}
-                  className="w-5 h-5 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
+                  className="w-5 h-5 text-[#0A4A55] rounded focus:ring-2 focus:ring-blue-500"
                 />
                 <div className="ml-3">
                   <p className="font-medium text-slate-900">Loan Alerts</p>
@@ -230,7 +230,7 @@ export function NotificationPreferences() {
                   type="checkbox"
                   checked={preferences.emi_reminders}
                   onChange={(e) => setPreferences({ ...preferences, emi_reminders: e.target.checked })}
-                  className="w-5 h-5 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
+                  className="w-5 h-5 text-[#0A4A55] rounded focus:ring-2 focus:ring-blue-500"
                 />
                 <div className="ml-3">
                   <p className="font-medium text-slate-900">EMI Reminders</p>
@@ -243,7 +243,7 @@ export function NotificationPreferences() {
                   type="checkbox"
                   checked={preferences.payment_alerts}
                   onChange={(e) => setPreferences({ ...preferences, payment_alerts: e.target.checked })}
-                  className="w-5 h-5 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
+                  className="w-5 h-5 text-[#0A4A55] rounded focus:ring-2 focus:ring-blue-500"
                 />
                 <div className="ml-3">
                   <p className="font-medium text-slate-900">Payment Acknowledgements</p>
@@ -319,7 +319,7 @@ export function NotificationPreferences() {
             <button
               onClick={handleSave}
               disabled={saving}
-              className="flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed font-medium"
+              className="flex items-center gap-2 px-6 py-3 bg-gradient-to-br from-[#0A4A55] to-[#106b7d] text-white rounded-lg hover:shadow-xl hover:scale-[1.02] transition disabled:opacity-50 disabled:cursor-not-allowed font-medium"
             >
               <Save className="w-5 h-5" />
               {saving ? 'Saving...' : 'Save Preferences'}

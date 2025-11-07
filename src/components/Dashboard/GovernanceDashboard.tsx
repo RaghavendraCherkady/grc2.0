@@ -151,7 +151,7 @@ export function GovernanceDashboard() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#0A4A55]"></div>
       </div>
     );
   }
@@ -180,7 +180,7 @@ export function GovernanceDashboard() {
           <p className="text-slate-600 mt-1">Real-time compliance monitoring and oversight</p>
         </div>
         <div className="text-right">
-          <p className="text-sm text-slate-600">Role: <span className="font-semibold text-blue-600">{profile?.role}</span></p>
+          <p className="text-sm text-slate-600">Role: <span className="font-semibold text-[#0A4A55]">{profile?.role}</span></p>
           <p className="text-sm text-slate-600">Department: {profile?.department || 'N/A'}</p>
         </div>
       </div>
@@ -188,7 +188,7 @@ export function GovernanceDashboard() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <div className="bg-white rounded-xl shadow-md p-6 border-l-4 border-blue-500">
           <div className="flex items-center justify-between mb-4">
-            <Users className="w-8 h-8 text-blue-600" />
+            <Users className="w-8 h-8 text-[#0A4A55]" />
             <span className="text-2xl font-bold text-slate-900">{stats.totalKycApplications}</span>
           </div>
           <h3 className="text-sm font-semibold text-slate-700 mb-1">Total KYC Applications</h3>

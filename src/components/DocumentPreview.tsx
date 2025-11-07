@@ -84,7 +84,7 @@ export function DocumentPreview({ url, title, onClose }: DocumentPreviewProps) {
               </p>
               <button
                 onClick={handleDownload}
-                className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-medium"
+                className="px-6 py-3 bg-gradient-to-br from-[#0A4A55] to-[#106b7d] text-white rounded-lg hover:shadow-xl hover:scale-[1.02] transition font-medium"
               >
                 Download File
               </button>

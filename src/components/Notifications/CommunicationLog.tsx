@@ -130,7 +130,7 @@ export function CommunicationLog() {
   const getChannelIcon = (channel: string) => {
     switch (channel) {
       case 'email':
-        return <Mail className="w-5 h-5 text-blue-600" />;
+        return <Mail className="w-5 h-5 text-[#0A4A55]" />;
       case 'sms':
         return <MessageSquare className="w-5 h-5 text-green-600" />;
       case 'voice':
@@ -209,7 +209,7 @@ export function CommunicationLog() {
     return (
       <div className="p-6">
         <div className="bg-white rounded-xl shadow-lg p-8 text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#0A4A55] mx-auto"></div>
           <p className="mt-4 text-slate-600">Loading communication log...</p>
         </div>
       </div>
@@ -242,10 +242,10 @@ export function CommunicationLog() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-slate-600">Email</p>
-              <p className="text-2xl font-bold text-blue-600">{stats.email}</p>
+              <p className="text-2xl font-bold text-[#0A4A55]">{stats.email}</p>
             </div>
             <div className="bg-blue-100 p-3 rounded-lg">
-              <Mail className="w-6 h-6 text-blue-600" />
+              <Mail className="w-6 h-6 text-[#0A4A55]" />
             </div>
           </div>
         </div>

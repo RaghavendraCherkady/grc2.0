@@ -163,26 +163,26 @@ export function KYCVerificationForm() {
         <p className="text-slate-600 mb-6">Complete your identity verification to access banking services</p>
 
         <div className="flex items-center justify-between mb-8">
-          <div className={`flex items-center ${step >= 1 ? 'text-blue-600' : 'text-slate-400'}`}>
-            <div className={`w-8 h-8 rounded-full flex items-center justify-center ${step >= 1 ? 'bg-blue-600 text-white' : 'bg-slate-200'}`}>
+          <div className={`flex items-center ${step >= 1 ? 'text-[#0A4A55]' : 'text-slate-400'}`}>
+            <div className={`w-8 h-8 rounded-full flex items-center justify-center ${step >= 1 ? 'bg-gradient-to-br from-[#0A4A55] to-[#106b7d] text-white' : 'bg-slate-200'}`}>
               1
             </div>
             <span className="ml-2 text-sm font-medium">Personal Info</span>
           </div>
-          <div className={`flex items-center ${step >= 2 ? 'text-blue-600' : 'text-slate-400'}`}>
-            <div className={`w-8 h-8 rounded-full flex items-center justify-center ${step >= 2 ? 'bg-blue-600 text-white' : 'bg-slate-200'}`}>
+          <div className={`flex items-center ${step >= 2 ? 'text-[#0A4A55]' : 'text-slate-400'}`}>
+            <div className={`w-8 h-8 rounded-full flex items-center justify-center ${step >= 2 ? 'bg-gradient-to-br from-[#0A4A55] to-[#106b7d] text-white' : 'bg-slate-200'}`}>
               2
             </div>
             <span className="ml-2 text-sm font-medium">Identity Proof</span>
           </div>
-          <div className={`flex items-center ${step >= 3 ? 'text-blue-600' : 'text-slate-400'}`}>
-            <div className={`w-8 h-8 rounded-full flex items-center justify-center ${step >= 3 ? 'bg-blue-600 text-white' : 'bg-slate-200'}`}>
+          <div className={`flex items-center ${step >= 3 ? 'text-[#0A4A55]' : 'text-slate-400'}`}>
+            <div className={`w-8 h-8 rounded-full flex items-center justify-center ${step >= 3 ? 'bg-gradient-to-br from-[#0A4A55] to-[#106b7d] text-white' : 'bg-slate-200'}`}>
               3
             </div>
             <span className="ml-2 text-sm font-medium">Address Proof</span>
           </div>
-          <div className={`flex items-center ${step >= 4 ? 'text-blue-600' : 'text-slate-400'}`}>
-            <div className={`w-8 h-8 rounded-full flex items-center justify-center ${step >= 4 ? 'bg-blue-600 text-white' : 'bg-slate-200'}`}>
+          <div className={`flex items-center ${step >= 4 ? 'text-[#0A4A55]' : 'text-slate-400'}`}>
+            <div className={`w-8 h-8 rounded-full flex items-center justify-center ${step >= 4 ? 'bg-gradient-to-br from-[#0A4A55] to-[#106b7d] text-white' : 'bg-slate-200'}`}>
               4
             </div>
             <span className="ml-2 text-sm font-medium">PAN Card</span>
@@ -271,7 +271,7 @@ export function KYCVerificationForm() {
                   id="sameAddress"
                   checked={formData.addressSameAsIdentity}
                   onChange={(e) => setFormData({ ...formData, addressSameAsIdentity: e.target.checked })}
-                  className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
+                  className="w-4 h-4 text-[#0A4A55] rounded focus:ring-2 focus:ring-blue-500"
                 />
                 <label htmlFor="sameAddress" className="ml-2 text-sm text-slate-700">
                   My Identity Proof is also my Address Proof
@@ -355,7 +355,7 @@ export function KYCVerificationForm() {
               <button
                 type="button"
                 onClick={() => setStep(step + 1)}
-                className="ml-auto px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+                className="ml-auto px-6 py-3 bg-gradient-to-br from-[#0A4A55] to-[#106b7d] text-white rounded-lg hover:shadow-xl hover:scale-[1.02] transition"
               >
                 Next
               </button>
@@ -363,7 +363,7 @@ export function KYCVerificationForm() {
               <button
                 type="submit"
                 disabled={loading}
-                className="ml-auto px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                className="ml-auto px-6 py-3 bg-gradient-to-br from-[#0A4A55] to-[#106b7d] text-white rounded-lg hover:shadow-xl hover:scale-[1.02] transition disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {loading ? 'Submitting...' : 'Submit Application'}
               </button>

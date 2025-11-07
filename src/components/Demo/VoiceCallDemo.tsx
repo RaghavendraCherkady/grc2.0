@@ -240,7 +240,7 @@ export function VoiceCallDemo() {
             <button
               onClick={makeVoiceCall}
               disabled={loading || !formData.phoneNumber || !formData.message}
-              className="w-full flex items-center justify-center gap-3 px-6 py-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed font-medium text-lg"
+              className="w-full flex items-center justify-center gap-3 px-6 py-4 bg-gradient-to-br from-[#0A4A55] to-[#106b7d] text-white rounded-lg hover:shadow-xl hover:scale-[1.02] transition disabled:opacity-50 disabled:cursor-not-allowed font-medium text-lg"
             >
               {loading ? (
                 <>
@@ -259,12 +259,12 @@ export function VoiceCallDemo() {
 
         <div className="mt-6 bg-slate-50 border border-slate-200 rounded-xl p-6">
           <h3 className="font-bold text-slate-900 mb-4 flex items-center gap-2">
-            <AlertCircle className="w-5 h-5 text-blue-600" />
+            <AlertCircle className="w-5 h-5 text-[#0A4A55]" />
             How It Works
           </h3>
           <div className="space-y-3 text-sm text-slate-700">
             <div className="flex items-start gap-3">
-              <div className="bg-blue-100 text-blue-600 rounded-full w-6 h-6 flex items-center justify-center flex-shrink-0 font-bold text-xs">
+              <div className="bg-blue-100 text-[#0A4A55] rounded-full w-6 h-6 flex items-center justify-center flex-shrink-0 font-bold text-xs">
                 1
               </div>
               <p>
@@ -277,7 +277,7 @@ export function VoiceCallDemo() {
               </p>
             </div>
             <div className="flex items-start gap-3">
-              <div className="bg-blue-100 text-blue-600 rounded-full w-6 h-6 flex items-center justify-center flex-shrink-0 font-bold text-xs">
+              <div className="bg-blue-100 text-[#0A4A55] rounded-full w-6 h-6 flex items-center justify-center flex-shrink-0 font-bold text-xs">
                 2
               </div>
               <p>
@@ -285,7 +285,7 @@ export function VoiceCallDemo() {
               </p>
             </div>
             <div className="flex items-start gap-3">
-              <div className="bg-blue-100 text-blue-600 rounded-full w-6 h-6 flex items-center justify-center flex-shrink-0 font-bold text-xs">
+              <div className="bg-blue-100 text-[#0A4A55] rounded-full w-6 h-6 flex items-center justify-center flex-shrink-0 font-bold text-xs">
                 3
               </div>
               <p>
@@ -293,7 +293,7 @@ export function VoiceCallDemo() {
               </p>
             </div>
             <div className="flex items-start gap-3">
-              <div className="bg-blue-100 text-blue-600 rounded-full w-6 h-6 flex items-center justify-center flex-shrink-0 font-bold text-xs">
+              <div className="bg-blue-100 text-[#0A4A55] rounded-full w-6 h-6 flex items-center justify-center flex-shrink-0 font-bold text-xs">
                 4
               </div>
               <p>

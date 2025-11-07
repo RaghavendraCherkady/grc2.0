@@ -80,7 +80,7 @@ export function KYCDetailView({ kycId, onClose, onApprove, onReject }: KYCDetail
     return (
       <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
         <div className="bg-white rounded-xl shadow-2xl p-8">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#0A4A55] mx-auto"></div>
           <p className="mt-4 text-slate-600">Loading KYC details...</p>
         </div>
       </div>
@@ -126,7 +126,7 @@ export function KYCDetailView({ kycId, onClose, onApprove, onReject }: KYCDetail
           <div className="p-6 space-y-6 max-h-[70vh] overflow-y-auto">
             <div className="bg-slate-50 rounded-lg p-6">
               <h3 className="text-lg font-semibold text-slate-900 mb-4 flex items-center">
-                <User className="w-5 h-5 mr-2 text-blue-600" />
+                <User className="w-5 h-5 mr-2 text-[#0A4A55]" />
                 Customer Information
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -160,7 +160,7 @@ export function KYCDetailView({ kycId, onClose, onApprove, onReject }: KYCDetail
 
             <div className="bg-blue-50 rounded-lg p-6">
               <h3 className="text-lg font-semibold text-slate-900 mb-4 flex items-center">
-                <CreditCard className="w-5 h-5 mr-2 text-blue-600" />
+                <CreditCard className="w-5 h-5 mr-2 text-[#0A4A55]" />
                 Identity Documents
               </h3>
               <div className="space-y-4">
@@ -175,7 +175,7 @@ export function KYCDetailView({ kycId, onClose, onApprove, onReject }: KYCDetail
                         url: kycData.identity_doc_url,
                         title: `${kycData.identity_doc_type} - ${kycData.customer_name}`
                       })}
-                      className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+                      className="flex items-center gap-2 px-4 py-2 bg-gradient-to-br from-[#0A4A55] to-[#106b7d] text-white rounded-lg hover:shadow-xl hover:scale-[1.02] transition"
                     >
                       <Eye className="w-4 h-4" />
                       View Document
@@ -198,7 +198,7 @@ export function KYCDetailView({ kycId, onClose, onApprove, onReject }: KYCDetail
                         url: kycData.pan_doc_url,
                         title: `PAN Card - ${kycData.customer_name}`
                       })}
-                      className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+                      className="flex items-center gap-2 px-4 py-2 bg-gradient-to-br from-[#0A4A55] to-[#106b7d] text-white rounded-lg hover:shadow-xl hover:scale-[1.02] transition"
                     >
                       <Eye className="w-4 h-4" />
                       View PAN

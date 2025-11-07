@@ -239,7 +239,7 @@ export function AuditObservationForm({ onSuccess, onCancel, relatedEntity }: Aud
         <button
           type="submit"
           disabled={loading}
-          className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed font-medium"
+          className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-br from-[#0A4A55] to-[#106b7d] text-white rounded-lg hover:shadow-xl hover:scale-[1.02] transition disabled:opacity-50 disabled:cursor-not-allowed font-medium"
         >
           {loading ? (
             <>

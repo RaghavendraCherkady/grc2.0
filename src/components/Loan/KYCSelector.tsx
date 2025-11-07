@@ -62,7 +62,7 @@ export function KYCSelector({ onSelect, onCancel }: KYCSelectorProps) {
     return (
       <div className="max-w-4xl mx-auto p-6">
         <div className="bg-white rounded-xl shadow-lg p-8 text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#0A4A55] mx-auto"></div>
           <p className="mt-4 text-slate-600">Loading verified KYC applications...</p>
         </div>
       </div>
@@ -154,7 +154,7 @@ export function KYCSelector({ onSelect, onCancel }: KYCSelectorProps) {
                 <div className="flex items-start justify-between">
                   <div className="flex items-start flex-1">
                     <div className="bg-blue-100 group-hover:bg-blue-200 rounded-full p-2 mr-3">
-                      <User className="w-5 h-5 text-blue-600" />
+                      <User className="w-5 h-5 text-[#0A4A55]" />
                     </div>
                     <div className="flex-1">
                       <div className="flex items-center">
