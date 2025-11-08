@@ -218,7 +218,7 @@ export function AppContent() {
           <div className="flex flex-col md:flex-row justify-between items-center">
             <div className="text-sm text-slate-600">
               <p className="font-semibold text-slate-900">NOVA-GRC AI-First Banking Compliance Platform</p>
-              <p className="mt-1">RBI FREE-AI Framework Compliant | DPDP Act 2023 Certified</p>
+              <p className="mt-1">RBI Framework Compliant | DPDP Act 2023 Certified</p>
             </div>
             <div className="mt-4 md:mt-0 text-sm text-slate-500">
               <p>Powered by Advanced RAG Technology</p>
