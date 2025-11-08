@@ -4,7 +4,7 @@ import { Shield, Lock, Eye, FileCheck, CheckCircle } from 'lucide-react';
 export function AIGovernanceSection() {
   const governance = [
     { icon: Shield, label: 'NIST AI RMF Aligned' },
-    { icon: CheckCircle, label: 'RBI FREE-AI Compliant' },
+    { icon: CheckCircle, label: 'RBI Compliant' },
     { icon: Eye, label: 'AI Ethics Committee' },
     { icon: Lock, label: 'Continuous Bias Monitoring' },
   ];
