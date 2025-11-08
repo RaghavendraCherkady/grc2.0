@@ -56,7 +56,7 @@
   ## Notes
   - Aligned with DPDP Act 2023 compliance requirements
   - Implements Maker-Checker workflow for SoD
-  - Supports RBI FREE-AI framework audit requirements
+  - Supports RBI compliant audit requirements
 */
 
 -- Enable UUID extension
