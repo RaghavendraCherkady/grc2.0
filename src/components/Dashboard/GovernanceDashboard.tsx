@@ -299,7 +299,7 @@ export function GovernanceDashboard() {
           </div>
           <div className="text-right">
             <p className="text-sm text-blue-100">Last Updated: {new Date().toLocaleDateString('en-IN')}</p>
-            <p className="text-sm text-blue-100">RBI FREE-AI Compliant</p>
+            <p className="text-sm text-blue-100">RBI Compliant</p>
           </div>
         </div>
       </div>
