@@ -30,7 +30,7 @@ export function HeroSection() {
             className="inline-flex items-center gap-2 px-4 py-2 bg-white/80 backdrop-blur-sm rounded-full border border-[#0A4A55]/20"
           >
             <span className="text-xs font-semibold text-[#0A4A55] uppercase tracking-wider">
-              AI-First Compliance • RBI Certified • DPDP Act 2023 Compliant
+              AI-First Compliance • RBI Compliant • DPDP Act 2023 Compliant
             </span>
           </motion.div>
 
