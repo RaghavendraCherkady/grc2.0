@@ -41,6 +41,49 @@ export type RiskRating =
   | 'medium'
   | 'high';
 
+export interface ExtractedKYCData {
+  identityProof?: {
+    documentNumber: string;
+    fullName: string;
+    dateOfBirth: string;
+    fatherName?: string;
+    address?: string;
+  };
+  addressProof?: {
+    fullAddress: string;
+    pinCode: string;
+  };
+  taxId?: {
+    panNumber: string;
+    fullName: string;
+  };
+  ocrConfidence?: number;
+}
+
+export interface KYCFormData {
+  customerName: string;
+  customerEmail: string;
+  customerPhone: string;
+  identityDocType: string;
+  identityFile: File | null;
+  identityDocNumber?: string;
+  identityFullName?: string;
+  identityDOB?: string;
+  identityFatherName?: string;
+  addressSameAsIdentity: boolean;
+  addressDocType: string;
+  addressFile: File | null;
+  addressDocNumber?: string;
+  fullAddress?: string;
+  pinCode?: string;
+  panFile: File | null;
+  panNumber?: string;
+  panFullName?: string;
+  extractedData?: ExtractedKYCData;
+  verificationResults?: any[];
+  requiresManualReview?: boolean;
+}
+
 export interface Database {
   public: {
     Tables: {

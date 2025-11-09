@@ -1,9 +1,13 @@
 import { useState } from 'react';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
-import { Upload, CheckCircle, AlertCircle } from 'lucide-react';
+import { Upload, CheckCircle, AlertCircle, Loader2 } from 'lucide-react';
 import { monitoring } from '../../lib/monitoring';
 import { createAuditLog } from '../../lib/auditLog';
+import { DocumentNumberInput } from './DocumentNumberInput';
+import { ValidationBadge } from './ValidationBadge';
+import { getDocumentNumberValidator, validateKYCConsistency, calculateNameMatch, ValidationError } from '../../services/kycValidation';
+import { verifyDocument, VerificationResult } from '../../services/governmentVerification';
 
 const IDENTITY_DOC_TYPES = ['Aadhaar Card', 'Passport', 'Voter ID Card', 'Driving License'];
 const ADDRESS_DOC_TYPES = ['Aadhaar Card', 'Passport', 'Voter ID Card', 'Utility Bill', 'Bank Statement'];
@@ -21,11 +25,26 @@ export function KYCVerificationForm() {
     customerPhone: '',
     identityDocType: '',
     identityFile: null as File | null,
+    identityDocNumber: '',
+    identityFullName: '',
+    identityDOB: '',
+    identityFatherName: '',
     addressSameAsIdentity: false,
     addressDocType: '',
     addressFile: null as File | null,
+    addressDocNumber: '',
+    fullAddress: '',
+    pinCode: '',
     panFile: null as File | null,
+    panNumber: '',
+    panFullName: '',
   });
+
+  const [validationErrors, setValidationErrors] = useState<ValidationError[]>([]);
+  const [verifying, setVerifying] = useState(false);
+  const [verificationResults, setVerificationResults] = useState<VerificationResult[]>([]);
+  const [docNumberError, setDocNumberError] = useState<string | null>(null);
+  const [panNumberError, setPanNumberError] = useState<string | null>(null);
 
   const handleFileUpload = async (file: File, path: string): Promise<string> => {
     const fileExt = file.name.split('.').pop();
@@ -45,10 +64,57 @@ export function KYCVerificationForm() {
     return data.publicUrl;
   };
 
+  const validateMandatoryFields = (): boolean => {
+    const errors: ValidationError[] = [];
+
+    if (formData.identityDocNumber) {
+      const validator = getDocumentNumberValidator(formData.identityDocType);
+      const error = validator(formData.identityDocNumber);
+      if (error) {
+        errors.push({ field: 'identityDocNumber', severity: 'error', message: error });
+      }
+    }
+
+    if (formData.panNumber) {
+      const validator = getDocumentNumberValidator('PAN Card');
+      const error = validator(formData.panNumber);
+      if (error) {
+        errors.push({ field: 'panNumber', severity: 'error', message: error });
+      }
+    }
+
+    const consistencyErrors = validateKYCConsistency({
+      identityProof: {
+        fullName: formData.identityFullName,
+        dateOfBirth: formData.identityDOB,
+        documentNumber: formData.identityDocNumber
+      },
+      taxId: {
+        fullName: formData.panFullName,
+        panNumber: formData.panNumber
+      },
+      addressProof: {
+        pinCode: formData.pinCode
+      }
+    });
+
+    errors.push(...consistencyErrors);
+    setValidationErrors(errors);
+
+    return errors.filter(e => e.severity === 'error').length === 0;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError('');
+    setValidationErrors([]);
+
+    if (!validateMandatoryFields()) {
+      setError('Please fix validation errors before submitting');
+      setLoading(false);
+      return;
+    }
 
     try {
       const identityUrl = formData.identityFile
@@ -63,6 +129,39 @@ export function KYCVerificationForm() {
         ? await handleFileUpload(formData.panFile, 'pan')
         : '';
 
+      setVerifying(true);
+      const verifications: VerificationResult[] = [];
+
+      if (formData.identityDocNumber && formData.identityFullName) {
+        try {
+          const result = await verifyDocument(formData.identityDocType, {
+            documentNumber: formData.identityDocNumber,
+            fullName: formData.identityFullName,
+            dateOfBirth: formData.identityDOB
+          });
+          verifications.push(result);
+        } catch (err) {
+          console.warn('Identity verification failed:', err);
+        }
+      }
+
+      if (formData.panNumber && formData.panFullName) {
+        try {
+          const result = await verifyDocument('PAN Card', {
+            documentNumber: formData.panNumber,
+            fullName: formData.panFullName
+          });
+          verifications.push(result);
+        } catch (err) {
+          console.warn('PAN verification failed:', err);
+        }
+      }
+
+      setVerificationResults(verifications);
+      setVerifying(false);
+
+      const requiresManualReview = verifications.some(v => v.status !== 'VERIFIED');
+
       const { data: insertedData, error: insertError } = await supabase
         .from('kyc_applications')
         .insert({
@@ -71,11 +170,32 @@ export function KYCVerificationForm() {
           customer_phone: formData.customerPhone,
           identity_doc_type: formData.identityDocType,
           identity_doc_url: identityUrl,
+          identity_doc_number: formData.identityDocNumber || null,
           address_same_as_identity: formData.addressSameAsIdentity,
           address_doc_type: formData.addressSameAsIdentity ? formData.identityDocType : formData.addressDocType,
           address_doc_url: formData.addressSameAsIdentity ? identityUrl : addressUrl,
+          address_doc_number: formData.addressDocNumber || null,
           pan_doc_url: panUrl,
-          status: 'pending',
+          pan_number: formData.panNumber || null,
+          extracted_data: {
+            identityProof: {
+              documentNumber: formData.identityDocNumber,
+              fullName: formData.identityFullName,
+              dateOfBirth: formData.identityDOB,
+              fatherName: formData.identityFatherName
+            },
+            addressProof: {
+              fullAddress: formData.fullAddress,
+              pinCode: formData.pinCode
+            },
+            taxId: {
+              panNumber: formData.panNumber,
+              fullName: formData.panFullName
+            },
+            verificationResults: verifications,
+            requiresManualReview
+          },
+          status: requiresManualReview ? 'needs_review' : 'pending',
           created_by: user?.id,
         })
         .select()
@@ -259,7 +379,73 @@ export function KYCVerificationForm() {
                   />
                   <p className="text-sm text-slate-500 mt-2">Max 10MB, PDF/JPG/PNG</p>
                 </div>
+                {formData.identityFile && (
+                  <p className="text-sm text-green-600 mt-2">File uploaded: {formData.identityFile.name}</p>
+                )}
               </div>
+
+              {formData.identityFile && formData.identityDocType && (
+                <div className="border-t pt-4 mt-4 space-y-4">
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
+                    <p className="text-sm text-blue-800">
+                      Please provide document details. These will be verified against government databases.
+                    </p>
+                  </div>
+
+                  <DocumentNumberInput
+                    documentType={formData.identityDocType}
+                    value={formData.identityDocNumber}
+                    onChange={(value) => {
+                      setFormData({ ...formData, identityDocNumber: value });
+                      setDocNumberError(null);
+                    }}
+                    error={docNumberError}
+                  />
+
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                      Full Name (as per document) <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.identityFullName}
+                      onChange={(e) => setFormData({ ...formData, identityFullName: e.target.value })}
+                      required
+                      className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      placeholder="Enter full name as shown on document"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                      Date of Birth <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="date"
+                      value={formData.identityDOB}
+                      onChange={(e) => setFormData({ ...formData, identityDOB: e.target.value })}
+                      required
+                      className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    />
+                  </div>
+
+                  {(formData.identityDocType === 'Aadhaar Card' || formData.identityDocType === 'Voter ID Card') && (
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-2">
+                        Father's Name <span className="text-red-500">*</span>
+                      </label>
+                      <input
+                        type="text"
+                        value={formData.identityFatherName}
+                        onChange={(e) => setFormData({ ...formData, identityFatherName: e.target.value })}
+                        required
+                        className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        placeholder="Enter father's name"
+                      />
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           )}
 
@@ -309,8 +495,52 @@ export function KYCVerificationForm() {
                       />
                       <p className="text-sm text-slate-500 mt-2">Max 10MB, PDF/JPG/PNG</p>
                     </div>
+                    {formData.addressFile && (
+                      <p className="text-sm text-green-600 mt-2">File uploaded: {formData.addressFile.name}</p>
+                    )}
                   </div>
+
+                  {formData.addressFile && (
+                    <div className="border-t pt-4 mt-4 space-y-4">
+                      <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-2">
+                          Complete Address <span className="text-red-500">*</span>
+                        </label>
+                        <textarea
+                          value={formData.fullAddress}
+                          onChange={(e) => setFormData({ ...formData, fullAddress: e.target.value })}
+                          rows={3}
+                          required
+                          className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          placeholder="Enter your complete address"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-2">
+                          PIN Code <span className="text-red-500">*</span>
+                        </label>
+                        <input
+                          type="text"
+                          value={formData.pinCode}
+                          onChange={(e) => setFormData({ ...formData, pinCode: e.target.value })}
+                          maxLength={6}
+                          required
+                          className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          placeholder="Enter 6-digit PIN code"
+                        />
+                      </div>
+                    </div>
+                  )}
                 </>
+              )}
+
+              {formData.addressSameAsIdentity && (
+                <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                  <p className="text-sm text-green-800">
+                    Address proof will be taken from your identity document.
+                  </p>
+                </div>
               )}
             </div>
           )}
@@ -330,7 +560,77 @@ export function KYCVerificationForm() {
                   />
                   <p className="text-sm text-slate-500 mt-2">Max 10MB, PDF/JPG/PNG</p>
                 </div>
+                {formData.panFile && (
+                  <p className="text-sm text-green-600 mt-2">File uploaded: {formData.panFile.name}</p>
+                )}
               </div>
+
+              {formData.panFile && (
+                <div className="border-t pt-4 mt-4 space-y-4">
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
+                    <p className="text-sm text-blue-800">
+                      Please provide PAN card details for verification.
+                    </p>
+                  </div>
+
+                  <DocumentNumberInput
+                    documentType="PAN Card"
+                    value={formData.panNumber}
+                    onChange={(value) => {
+                      setFormData({ ...formData, panNumber: value });
+                      setPanNumberError(null);
+                    }}
+                    error={panNumberError}
+                  />
+
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                      Name on PAN Card <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.panFullName}
+                      onChange={(e) => setFormData({ ...formData, panFullName: e.target.value })}
+                      required
+                      className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      placeholder="Enter name as shown on PAN card"
+                    />
+                  </div>
+
+                  {formData.identityFullName && formData.panFullName && (
+                    <div className="mt-4">
+                      {(() => {
+                        const match = calculateNameMatch(formData.identityFullName, formData.panFullName);
+                        if (match >= 90) {
+                          return <ValidationBadge status="verified" message="Name Match" confidence={match} />;
+                        } else if (match >= 70) {
+                          return <ValidationBadge status="warning" message="Partial Name Match" confidence={match} />;
+                        } else {
+                          return <ValidationBadge status="error" message="Name Mismatch" confidence={match} />;
+                        }
+                      })()}
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
+
+          {validationErrors.length > 0 && (
+            <div className="mt-4 space-y-2">
+              {validationErrors.map((err, idx) => (
+                <div
+                  key={idx}
+                  className={`px-4 py-3 rounded-lg flex items-start ${
+                    err.severity === 'error'
+                      ? 'bg-red-50 border border-red-200 text-red-700'
+                      : 'bg-orange-50 border border-orange-200 text-orange-700'
+                  }`}
+                >
+                  <AlertCircle className="w-5 h-5 mr-2 flex-shrink-0 mt-0.5" />
+                  <span className="text-sm">{err.message}</span>
+                </div>
+              ))}
             </div>
           )}
 
@@ -338,6 +638,27 @@ export function KYCVerificationForm() {
             <div className="mt-4 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg flex items-start">
               <AlertCircle className="w-5 h-5 mr-2 flex-shrink-0 mt-0.5" />
               <span className="text-sm">{error}</span>
+            </div>
+          )}
+
+          {verifying && (
+            <div className="mt-4 bg-blue-50 border border-blue-200 text-blue-700 px-4 py-3 rounded-lg flex items-center">
+              <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+              <span className="text-sm">Verifying documents with government databases...</span>
+            </div>
+          )}
+
+          {verificationResults.length > 0 && (
+            <div className="mt-4 space-y-2">
+              {verificationResults.map((result, idx) => (
+                <div key={idx} className="bg-slate-50 border border-slate-200 rounded-lg p-3">
+                  <ValidationBadge
+                    status={result.status === 'VERIFIED' ? 'verified' : 'warning'}
+                    message={result.message}
+                    confidence={result.matchPercentage}
+                  />
+                </div>
+              ))}
             </div>
           )}
 
@@ -362,10 +683,11 @@ export function KYCVerificationForm() {
             ) : (
               <button
                 type="submit"
-                disabled={loading}
-                className="ml-auto px-6 py-3 bg-gradient-to-br from-[#0A4A55] to-[#106b7d] text-white rounded-lg hover:shadow-xl hover:scale-[1.02] transition disabled:opacity-50 disabled:cursor-not-allowed"
+                disabled={loading || verifying}
+                className="ml-auto px-6 py-3 bg-gradient-to-br from-[#0A4A55] to-[#106b7d] text-white rounded-lg hover:shadow-xl hover:scale-[1.02] transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
               >
-                {loading ? 'Submitting...' : 'Submit Application'}
+                {(loading || verifying) && <Loader2 className="w-4 h-4 animate-spin" />}
+                {verifying ? 'Verifying...' : loading ? 'Submitting...' : 'Submit Application'}
               </button>
             )}
           </div>
