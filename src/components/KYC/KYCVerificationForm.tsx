@@ -107,9 +107,18 @@ export function KYCVerificationForm() {
         return false;
       }
 
-      if (docCategory === 'identity') setIdentityDocValidated(true);
-      if (docCategory === 'address') setAddressDocValidated(true);
-      if (docCategory === 'pan') setPanDocValidated(true);
+      if (docCategory === 'identity') {
+        setIdentityDocValidated(true);
+        autoPopulateIdentityFields(result.extractedData);
+      }
+      if (docCategory === 'address') {
+        setAddressDocValidated(true);
+        autoPopulateAddressFields(result.extractedData);
+      }
+      if (docCategory === 'pan') {
+        setPanDocValidated(true);
+        autoPopulatePanFields(result.extractedData);
+      }
 
       setTemplateValidating(false);
       return true;
@@ -118,6 +127,92 @@ export function KYCVerificationForm() {
       setTemplateValidating(false);
       return false;
     }
+  };
+
+  const autoPopulateIdentityFields = (extractedData: any) => {
+    if (!extractedData || !extractedData.fields) return;
+
+    const fields = extractedData.fields;
+    const updates: any = {};
+
+    if (fields.name) updates.identityFullName = fields.name;
+    if (fields.dob) updates.identityDOB = formatDateForInput(fields.dob);
+    if (fields.father_name) updates.identityFatherName = fields.father_name;
+
+    if (fields.aadhaar_number) {
+      updates.identityDocNumber = fields.aadhaar_number.replace(/\s/g, '');
+    } else if (fields.passport_number) {
+      updates.identityDocNumber = fields.passport_number;
+    } else if (fields.voter_id_number) {
+      updates.identityDocNumber = fields.voter_id_number;
+    } else if (fields.dl_number) {
+      updates.identityDocNumber = fields.dl_number;
+    }
+
+    if (fields.address) {
+      updates.fullAddress = fields.address;
+      const pinMatch = fields.address.match(/\b\d{6}\b/);
+      if (pinMatch) updates.pinCode = pinMatch[0];
+    }
+
+    setFormData(prev => ({ ...prev, ...updates }));
+  };
+
+  const autoPopulateAddressFields = (extractedData: any) => {
+    if (!extractedData || !extractedData.fields) return;
+
+    const fields = extractedData.fields;
+    const updates: any = {};
+
+    if (fields.address) {
+      updates.fullAddress = fields.address;
+      const pinMatch = fields.address.match(/\b\d{6}\b/);
+      if (pinMatch) updates.pinCode = pinMatch[0];
+    }
+
+    if (fields.aadhaar_number) {
+      updates.addressDocNumber = fields.aadhaar_number.replace(/\s/g, '');
+    } else if (fields.voter_id_number) {
+      updates.addressDocNumber = fields.voter_id_number;
+    }
+
+    setFormData(prev => ({ ...prev, ...updates }));
+  };
+
+  const autoPopulatePanFields = (extractedData: any) => {
+    if (!extractedData || !extractedData.fields) return;
+
+    const fields = extractedData.fields;
+    const updates: any = {};
+
+    if (fields.pan_number) updates.panNumber = fields.pan_number;
+    if (fields.name) updates.panFullName = fields.name;
+
+    setFormData(prev => ({ ...prev, ...updates }));
+  };
+
+  const formatDateForInput = (dateStr: string): string => {
+    if (!dateStr) return '';
+
+    const formats = [
+      /(\d{2})\/(\d{2})\/(\d{4})/,
+      /(\d{2})-(\d{2})-(\d{4})/,
+      /(\d{4})\/(\d{2})\/(\d{2})/,
+      /(\d{4})-(\d{2})-(\d{2})/
+    ];
+
+    for (const format of formats) {
+      const match = dateStr.match(format);
+      if (match) {
+        if (match[1].length === 4) {
+          return `${match[1]}-${match[2]}-${match[3]}`;
+        } else {
+          return `${match[3]}-${match[2]}-${match[1]}`;
+        }
+      }
+    }
+
+    return '';
   };
 
   const handleFileUpload = async (file: File, path: string): Promise<string> => {
@@ -498,10 +593,16 @@ export function KYCVerificationForm() {
 
               {formData.identityFile && formData.identityDocType && identityDocValidated && !templateValidationError && (
                 <div className="border-t pt-4 mt-4 space-y-4">
-                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
-                    <p className="text-sm text-blue-800">
-                      Please provide document details. These will be verified against government databases.
-                    </p>
+                  <div className="bg-green-50 border border-green-200 rounded-lg p-3 mb-4">
+                    <div className="flex items-start">
+                      <CheckCircle className="w-5 h-5 text-green-600 mr-2 mt-0.5 flex-shrink-0" />
+                      <div>
+                        <p className="text-sm font-medium text-green-900">Document Verified & Fields Auto-Populated</p>
+                        <p className="text-xs text-green-700 mt-1">
+                          Information extracted via OCR. Please verify accuracy before proceeding.
+                        </p>
+                      </div>
+                    </div>
                   </div>
 
                   <DocumentNumberInput
@@ -517,6 +618,9 @@ export function KYCVerificationForm() {
                   <div>
                     <label className="block text-sm font-medium text-slate-700 mb-2">
                       Full Name (as per document) <span className="text-red-500">*</span>
+                      {formData.identityFullName && (
+                        <span className="ml-2 text-xs text-green-600 font-normal">(Auto-filled from OCR)</span>
+                      )}
                     </label>
                     <input
                       type="text"
@@ -531,6 +635,9 @@ export function KYCVerificationForm() {
                   <div>
                     <label className="block text-sm font-medium text-slate-700 mb-2">
                       Date of Birth <span className="text-red-500">*</span>
+                      {formData.identityDOB && (
+                        <span className="ml-2 text-xs text-green-600 font-normal">(Auto-filled from OCR)</span>
+                      )}
                     </label>
                     <input
                       type="date"
