@@ -47,6 +47,9 @@ export function KYCVerificationForm() {
   const [panNumberError, setPanNumberError] = useState<string | null>(null);
   const [templateValidating, setTemplateValidating] = useState(false);
   const [templateValidationError, setTemplateValidationError] = useState<string | null>(null);
+  const [identityDocValidated, setIdentityDocValidated] = useState(false);
+  const [addressDocValidated, setAddressDocValidated] = useState(false);
+  const [panDocValidated, setPanDocValidated] = useState(false);
 
   const validateDocumentBeforeUpload = async (file: File, documentType: string): Promise<boolean> => {
     if (file.size > 10 * 1024 * 1024) {
@@ -65,6 +68,56 @@ export function KYCVerificationForm() {
 
     setTemplateValidationError(null);
     return true;
+  };
+
+  const validateDocumentTemplate = async (
+    fileUrl: string,
+    documentType: string,
+    docCategory: 'identity' | 'address' | 'pan'
+  ): Promise<boolean> => {
+    setTemplateValidating(true);
+    setTemplateValidationError(null);
+
+    try {
+      const processUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/process-kyc-document`;
+      const response = await fetch(processUrl, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          documentUrl: fileUrl,
+          documentType: documentType,
+          kycApplicationId: 'temp-validation-' + Date.now()
+        }),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok || !result.success) {
+        const errorMsg = result.templateValidation?.rejectionReason || result.error || 'Document validation failed';
+        setTemplateValidationError(errorMsg);
+
+        if (docCategory === 'identity') setIdentityDocValidated(false);
+        if (docCategory === 'address') setAddressDocValidated(false);
+        if (docCategory === 'pan') setPanDocValidated(false);
+
+        setTemplateValidating(false);
+        return false;
+      }
+
+      if (docCategory === 'identity') setIdentityDocValidated(true);
+      if (docCategory === 'address') setAddressDocValidated(true);
+      if (docCategory === 'pan') setPanDocValidated(true);
+
+      setTemplateValidating(false);
+      return true;
+    } catch (error: any) {
+      setTemplateValidationError('Failed to validate document. Please try again.');
+      setTemplateValidating(false);
+      return false;
+    }
   };
 
   const handleFileUpload = async (file: File, path: string): Promise<string> => {
@@ -400,6 +453,16 @@ export function KYCVerificationForm() {
                         const isValid = await validateDocumentBeforeUpload(file, formData.identityDocType);
                         if (isValid) {
                           setFormData({ ...formData, identityFile: file });
+                          setIdentityDocValidated(false);
+
+                          try {
+                            const uploadedUrl = await handleFileUpload(file, 'identity');
+                            await validateDocumentTemplate(uploadedUrl, formData.identityDocType, 'identity');
+                          } catch (err: any) {
+                            setTemplateValidationError(err.message || 'Upload failed');
+                            e.target.value = '';
+                            setFormData({ ...formData, identityFile: null });
+                          }
                         } else {
                           e.target.value = '';
                         }
@@ -408,12 +471,22 @@ export function KYCVerificationForm() {
                       }
                     }}
                     required
+                    disabled={templateValidating}
                     className="w-full"
                   />
                   <p className="text-sm text-slate-500 mt-2">Max 10MB, PDF/JPG/PNG</p>
                 </div>
-                {formData.identityFile && (
-                  <p className="text-sm text-green-600 mt-2">File uploaded: {formData.identityFile.name}</p>
+                {templateValidating && (
+                  <div className="mt-2 text-sm text-blue-600 flex items-center">
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    <span>Validating document template via OCR...</span>
+                  </div>
+                )}
+                {formData.identityFile && !templateValidating && identityDocValidated && (
+                  <div className="mt-2 text-sm text-green-600 flex items-center">
+                    <CheckCircle className="w-4 h-4 mr-2" />
+                    <span>Document validated: {formData.identityFile.name}</span>
+                  </div>
                 )}
                 {templateValidationError && (
                   <div className="mt-2 text-sm text-red-600 flex items-start">
@@ -423,7 +496,7 @@ export function KYCVerificationForm() {
                 )}
               </div>
 
-              {formData.identityFile && formData.identityDocType && !templateValidationError && (
+              {formData.identityFile && formData.identityDocType && identityDocValidated && !templateValidationError && (
                 <div className="border-t pt-4 mt-4 space-y-4">
                   <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
                     <p className="text-sm text-blue-800">
@@ -534,6 +607,16 @@ export function KYCVerificationForm() {
                             const isValid = await validateDocumentBeforeUpload(file, formData.addressDocType);
                             if (isValid) {
                               setFormData({ ...formData, addressFile: file });
+                              setAddressDocValidated(false);
+
+                              try {
+                                const uploadedUrl = await handleFileUpload(file, 'address');
+                                await validateDocumentTemplate(uploadedUrl, formData.addressDocType, 'address');
+                              } catch (err: any) {
+                                setTemplateValidationError(err.message || 'Upload failed');
+                                e.target.value = '';
+                                setFormData({ ...formData, addressFile: null });
+                              }
                             } else {
                               e.target.value = '';
                             }
@@ -542,16 +625,26 @@ export function KYCVerificationForm() {
                           }
                         }}
                         required
+                        disabled={templateValidating}
                         className="w-full"
                       />
                       <p className="text-sm text-slate-500 mt-2">Max 10MB, PDF/JPG/PNG</p>
                     </div>
-                    {formData.addressFile && (
-                      <p className="text-sm text-green-600 mt-2">File uploaded: {formData.addressFile.name}</p>
+                    {templateValidating && (
+                      <div className="mt-2 text-sm text-blue-600 flex items-center">
+                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        <span>Validating address document template via OCR...</span>
+                      </div>
+                    )}
+                    {formData.addressFile && !templateValidating && addressDocValidated && (
+                      <div className="mt-2 text-sm text-green-600 flex items-center">
+                        <CheckCircle className="w-4 h-4 mr-2" />
+                        <span>Address document validated: {formData.addressFile.name}</span>
+                      </div>
                     )}
                   </div>
 
-                  {formData.addressFile && (
+                  {formData.addressFile && addressDocValidated && (
                     <div className="border-t pt-4 mt-4 space-y-4">
                       <div>
                         <label className="block text-sm font-medium text-slate-700 mb-2">
@@ -611,6 +704,16 @@ export function KYCVerificationForm() {
                         const isValid = await validateDocumentBeforeUpload(file, 'PAN Card');
                         if (isValid) {
                           setFormData({ ...formData, panFile: file });
+                          setPanDocValidated(false);
+
+                          try {
+                            const uploadedUrl = await handleFileUpload(file, 'pan');
+                            await validateDocumentTemplate(uploadedUrl, 'PAN Card', 'pan');
+                          } catch (err: any) {
+                            setTemplateValidationError(err.message || 'Upload failed');
+                            e.target.value = '';
+                            setFormData({ ...formData, panFile: null });
+                          }
                         } else {
                           e.target.value = '';
                         }
@@ -619,16 +722,26 @@ export function KYCVerificationForm() {
                       }
                     }}
                     required
+                    disabled={templateValidating}
                     className="w-full"
                   />
                   <p className="text-sm text-slate-500 mt-2">Max 10MB, PDF/JPG/PNG</p>
                 </div>
-                {formData.panFile && (
-                  <p className="text-sm text-green-600 mt-2">File uploaded: {formData.panFile.name}</p>
+                {templateValidating && (
+                  <div className="mt-2 text-sm text-blue-600 flex items-center">
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    <span>Validating PAN card template via OCR...</span>
+                  </div>
+                )}
+                {formData.panFile && !templateValidating && panDocValidated && (
+                  <div className="mt-2 text-sm text-green-600 flex items-center">
+                    <CheckCircle className="w-4 h-4 mr-2" />
+                    <span>PAN card validated: {formData.panFile.name}</span>
+                  </div>
                 )}
               </div>
 
-              {formData.panFile && (
+              {formData.panFile && panDocValidated && (
                 <div className="border-t pt-4 mt-4 space-y-4">
                   <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
                     <p className="text-sm text-blue-800">
@@ -739,14 +852,19 @@ export function KYCVerificationForm() {
               <button
                 type="button"
                 onClick={() => setStep(step + 1)}
-                className="ml-auto px-6 py-3 bg-gradient-to-br from-[#0A4A55] to-[#106b7d] text-white rounded-lg hover:shadow-xl hover:scale-[1.02] transition"
+                disabled={
+                  templateValidating ||
+                  (step === 2 && (!identityDocValidated || templateValidationError !== null)) ||
+                  (step === 3 && !formData.addressSameAsIdentity && (!addressDocValidated || templateValidationError !== null))
+                }
+                className="ml-auto px-6 py-3 bg-gradient-to-br from-[#0A4A55] to-[#106b7d] text-white rounded-lg hover:shadow-xl hover:scale-[1.02] transition disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Next
               </button>
             ) : (
               <button
                 type="submit"
-                disabled={loading || verifying}
+                disabled={loading || verifying || templateValidating || !panDocValidated || templateValidationError !== null}
                 className="ml-auto px-6 py-3 bg-gradient-to-br from-[#0A4A55] to-[#106b7d] text-white rounded-lg hover:shadow-xl hover:scale-[1.02] transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
               >
                 {(loading || verifying) && <Loader2 className="w-4 h-4 animate-spin" />}
