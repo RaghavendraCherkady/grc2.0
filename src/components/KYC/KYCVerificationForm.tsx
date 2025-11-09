@@ -45,6 +45,27 @@ export function KYCVerificationForm() {
   const [verificationResults, setVerificationResults] = useState<VerificationResult[]>([]);
   const [docNumberError, setDocNumberError] = useState<string | null>(null);
   const [panNumberError, setPanNumberError] = useState<string | null>(null);
+  const [templateValidating, setTemplateValidating] = useState(false);
+  const [templateValidationError, setTemplateValidationError] = useState<string | null>(null);
+
+  const validateDocumentBeforeUpload = async (file: File, documentType: string): Promise<boolean> => {
+    if (file.size > 10 * 1024 * 1024) {
+      setTemplateValidationError('File size exceeds 10MB limit');
+      return false;
+    }
+
+    const validExtensions = ['.pdf', '.jpg', '.jpeg', '.png'];
+    const fileName = file.name.toLowerCase();
+    const hasValidExtension = validExtensions.some(ext => fileName.endsWith(ext));
+
+    if (!hasValidExtension) {
+      setTemplateValidationError('Invalid file format. Only PDF, JPG, JPEG, and PNG are allowed');
+      return false;
+    }
+
+    setTemplateValidationError(null);
+    return true;
+  };
 
   const handleFileUpload = async (file: File, path: string): Promise<string> => {
     const fileExt = file.name.split('.').pop();
@@ -373,7 +394,19 @@ export function KYCVerificationForm() {
                   <input
                     type="file"
                     accept=".pdf,.jpg,.jpeg,.png"
-                    onChange={(e) => setFormData({ ...formData, identityFile: e.target.files?.[0] || null })}
+                    onChange={async (e) => {
+                      const file = e.target.files?.[0] || null;
+                      if (file && formData.identityDocType) {
+                        const isValid = await validateDocumentBeforeUpload(file, formData.identityDocType);
+                        if (isValid) {
+                          setFormData({ ...formData, identityFile: file });
+                        } else {
+                          e.target.value = '';
+                        }
+                      } else {
+                        setFormData({ ...formData, identityFile: file });
+                      }
+                    }}
                     required
                     className="w-full"
                   />
@@ -382,9 +415,15 @@ export function KYCVerificationForm() {
                 {formData.identityFile && (
                   <p className="text-sm text-green-600 mt-2">File uploaded: {formData.identityFile.name}</p>
                 )}
+                {templateValidationError && (
+                  <div className="mt-2 text-sm text-red-600 flex items-start">
+                    <AlertCircle className="w-4 h-4 mr-1 mt-0.5 flex-shrink-0" />
+                    <span>{templateValidationError}</span>
+                  </div>
+                )}
               </div>
 
-              {formData.identityFile && formData.identityDocType && (
+              {formData.identityFile && formData.identityDocType && !templateValidationError && (
                 <div className="border-t pt-4 mt-4 space-y-4">
                   <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
                     <p className="text-sm text-blue-800">
@@ -489,7 +528,19 @@ export function KYCVerificationForm() {
                       <input
                         type="file"
                         accept=".pdf,.jpg,.jpeg,.png"
-                        onChange={(e) => setFormData({ ...formData, addressFile: e.target.files?.[0] || null })}
+                        onChange={async (e) => {
+                          const file = e.target.files?.[0] || null;
+                          if (file && formData.addressDocType) {
+                            const isValid = await validateDocumentBeforeUpload(file, formData.addressDocType);
+                            if (isValid) {
+                              setFormData({ ...formData, addressFile: file });
+                            } else {
+                              e.target.value = '';
+                            }
+                          } else {
+                            setFormData({ ...formData, addressFile: file });
+                          }
+                        }}
                         required
                         className="w-full"
                       />
@@ -554,7 +605,19 @@ export function KYCVerificationForm() {
                   <input
                     type="file"
                     accept=".pdf,.jpg,.jpeg,.png"
-                    onChange={(e) => setFormData({ ...formData, panFile: e.target.files?.[0] || null })}
+                    onChange={async (e) => {
+                      const file = e.target.files?.[0] || null;
+                      if (file) {
+                        const isValid = await validateDocumentBeforeUpload(file, 'PAN Card');
+                        if (isValid) {
+                          setFormData({ ...formData, panFile: file });
+                        } else {
+                          e.target.value = '';
+                        }
+                      } else {
+                        setFormData({ ...formData, panFile: file });
+                      }
+                    }}
                     required
                     className="w-full"
                   />
