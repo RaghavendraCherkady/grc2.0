@@ -256,6 +256,7 @@ function getRequiredFieldsPrompt(documentType: string): string {
     "Aadhaar Card": `- name (full name as printed)
 - aadhaar_number (12 digits)
 - dob (date of birth)
+- father_name (if visible)
 - address (complete address)
 - gender`,
     "PAN Card": `- name (full name in capital letters)
@@ -271,10 +272,12 @@ function getRequiredFieldsPrompt(documentType: string): string {
     "Voter ID Card": `- name
 - voter_id_number
 - dob
+- father_name (if visible)
 - address`,
     "Driving License": `- name
 - dl_number
 - dob
+- father_name (if visible)
 - address
 - date_of_issue
 - date_of_expiry`,
@@ -286,10 +289,11 @@ function getRequiredFieldsPrompt(documentType: string): string {
 function getMockData(documentType: string): DocumentData {
   const mockData: Record<string, DocumentData> = {
     "Aadhaar Card": {
-      text: "Government of India\nAadhaar Card\nName: Sample User\nAadhaar Number: 1234 5678 9012\nDOB: 01/01/1990\nAddress: 123 Sample Street, Mumbai, Maharashtra",
+      text: "Government of India\nAadhaar Card\nName: Sample User\nS/O: Sample Father\nAadhaar Number: 1234 5678 9012\nDOB: 01/01/1990\nAddress: 123 Sample Street, Mumbai, Maharashtra",
       confidence: 0.95,
       fields: {
         name: "Sample User",
+        father_name: "Sample Father",
         aadhaar_number: "1234 5678 9012",
         dob: "01/01/1990",
         address: "123 Sample Street, Mumbai, Maharashtra",

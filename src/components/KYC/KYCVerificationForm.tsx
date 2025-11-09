@@ -50,6 +50,7 @@ export function KYCVerificationForm() {
   const [identityDocValidated, setIdentityDocValidated] = useState(false);
   const [addressDocValidated, setAddressDocValidated] = useState(false);
   const [panDocValidated, setPanDocValidated] = useState(false);
+  const [phoneError, setPhoneError] = useState<string | null>(null);
 
   const validateDocumentBeforeUpload = async (file: File, documentType: string): Promise<boolean> => {
     if (file.size > 10 * 1024 * 1024) {
@@ -213,6 +214,30 @@ export function KYCVerificationForm() {
     }
 
     return '';
+  };
+
+  const validatePhoneNumber = (phone: string): boolean => {
+    setPhoneError(null);
+
+    const cleaned = phone.replace(/\s+/g, '');
+
+    if (cleaned.length < 10) {
+      setPhoneError('Phone number must be at least 10 digits');
+      return false;
+    }
+
+    if (!cleaned.startsWith('+91')) {
+      setPhoneError('Phone number must start with country code +91');
+      return false;
+    }
+
+    const digitsOnly = cleaned.replace(/[^0-9]/g, '');
+    if (digitsOnly.length < 12) {
+      setPhoneError('Phone number must have 10 digits after country code (+91)');
+      return false;
+    }
+
+    return true;
   };
 
   const handleFileUpload = async (file: File, path: string): Promise<string> => {
@@ -508,11 +533,24 @@ export function KYCVerificationForm() {
                 <input
                   type="tel"
                   value={formData.customerPhone}
-                  onChange={(e) => setFormData({ ...formData, customerPhone: e.target.value })}
+                  onChange={(e) => {
+                    setFormData({ ...formData, customerPhone: e.target.value });
+                    setPhoneError(null);
+                  }}
+                  onBlur={(e) => validatePhoneNumber(e.target.value)}
                   required
-                  className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="Enter your phone number"
+                  className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                    phoneError ? 'border-red-500' : 'border-slate-300'
+                  }`}
+                  placeholder="+91XXXXXXXXXX"
                 />
+                {phoneError && (
+                  <div className="mt-1 text-sm text-red-600 flex items-center">
+                    <AlertCircle className="w-4 h-4 mr-1" />
+                    {phoneError}
+                  </div>
+                )}
+                <p className="mt-1 text-xs text-slate-500">Format: +91 followed by 10 digits</p>
               </div>
             </div>
           )}
@@ -958,9 +996,15 @@ export function KYCVerificationForm() {
             {step < 4 ? (
               <button
                 type="button"
-                onClick={() => setStep(step + 1)}
+                onClick={() => {
+                  if (step === 1 && !validatePhoneNumber(formData.customerPhone)) {
+                    return;
+                  }
+                  setStep(step + 1);
+                }}
                 disabled={
                   templateValidating ||
+                  (step === 1 && phoneError !== null) ||
                   (step === 2 && (!identityDocValidated || templateValidationError !== null)) ||
                   (step === 3 && !formData.addressSameAsIdentity && (!addressDocValidated || templateValidationError !== null))
                 }
