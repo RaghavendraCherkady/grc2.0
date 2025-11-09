@@ -2,7 +2,6 @@ import { motion } from 'framer-motion';
 import { HeroSection } from './sections/HeroSection';
 import { ProblemSection } from './sections/ProblemSection';
 import { CoreModulesSection } from './sections/CoreModulesSection';
-import { TechnologySection } from './sections/TechnologySection';
 import { AIGovernanceSection } from './sections/AIGovernanceSection';
 import { ValuePropsSection } from './sections/ValuePropsSection';
 import { CTASection } from './sections/CTASection';
@@ -16,7 +15,6 @@ export function LandingPage() {
       <HeroSection />
       <ProblemSection />
       <CoreModulesSection />
-      <TechnologySection />
       <AIGovernanceSection />
       <ValuePropsSection />
       <CTASection />
