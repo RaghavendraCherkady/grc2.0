@@ -17,7 +17,6 @@ export function Navigation() {
 
   const menuItems = [
     { label: 'Product', href: '#modules' },
-    { label: 'Technology', href: '#technology' },
     { label: 'Security', href: '#governance' },
     { label: 'Pricing', href: '#cta' },
   ];
