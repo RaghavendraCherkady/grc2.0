@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from './contexts/AuthContext';
 import { LoginForm } from './components/Auth/LoginForm';
 import { KYCVerificationForm } from './components/KYC/KYCVerificationForm';
@@ -14,10 +14,29 @@ import { Shield, FileText, TrendingUp, LayoutDashboard, Clipboard, LogOut, Menu,
 
 type View = 'dashboard' | 'kyc' | 'loan' | 'review' | 'communications' | 'notifications' | 'audit' | 'voice_demo' | 'web_voice';
 
+const getDefaultView = (role: string): View => {
+  if (role === 'loan_officer' || role === 'branch_manager' || role === 'relationship_manager') {
+    return 'kyc';
+  }
+  if (role === 'compliance_manager' || role === 'cco') {
+    return 'review';
+  }
+  if (role === 'internal_auditor') {
+    return 'audit';
+  }
+  return 'dashboard';
+};
+
 export function AppContent() {
   const { user, profile, loading, signOut } = useAuth();
   const [currentView, setCurrentView] = useState<View>('dashboard');
   const [menuOpen, setMenuOpen] = useState(false);
+
+  useEffect(() => {
+    if (profile) {
+      setCurrentView(getDefaultView(profile.role));
+    }
+  }, [profile]);
 
   if (loading) {
     return (

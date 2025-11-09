@@ -221,19 +221,20 @@ export function KYCVerificationForm() {
 
     const cleaned = phone.replace(/\s+/g, '');
 
-    if (cleaned.length < 10) {
-      setPhoneError('Phone number must be at least 10 digits');
-      return false;
-    }
-
     if (!cleaned.startsWith('+91')) {
       setPhoneError('Phone number must start with country code +91');
       return false;
     }
 
     const digitsOnly = cleaned.replace(/[^0-9]/g, '');
-    if (digitsOnly.length < 12) {
-      setPhoneError('Phone number must have 10 digits after country code (+91)');
+    if (digitsOnly.length !== 12) {
+      setPhoneError('Phone number must be exactly country code +91 followed by 10 digits');
+      return false;
+    }
+
+    const phoneDigits = cleaned.substring(3);
+    if (!/^\d{10}$/.test(phoneDigits)) {
+      setPhoneError('Phone number must have exactly 10 digits after +91');
       return false;
     }
 
