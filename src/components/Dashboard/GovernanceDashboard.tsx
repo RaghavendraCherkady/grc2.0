@@ -26,7 +26,51 @@ interface Stats {
   complianceScore: number;
 }
 
-export function GovernanceDashboard() {
+interface DashboardCardProps {
+  icon: React.ReactNode;
+  value: string | number;
+  title: string;
+  subtitle: string;
+  borderColor: string;
+  iconColor: string;
+  onClick?: () => void;
+}
+
+function DashboardCard({ icon, value, title, subtitle, borderColor, iconColor, onClick }: DashboardCardProps) {
+  const CardWrapper = onClick ? 'button' : 'div';
+  const interactiveClasses = onClick
+    ? 'cursor-pointer transform transition-all duration-300 hover:scale-105 hover:shadow-xl active:scale-95'
+    : '';
+
+  return (
+    <CardWrapper
+      onClick={onClick}
+      className={`bg-white rounded-xl shadow-md p-6 border-l-4 ${borderColor} ${interactiveClasses} text-left w-full relative overflow-hidden group`}
+    >
+      {onClick && (
+        <div className="absolute inset-0 bg-gradient-to-r from-transparent to-blue-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+      )}
+      <div className="relative z-10">
+        <div className="flex items-center justify-between mb-4">
+          <div className={`${iconColor} transform group-hover:scale-110 transition-transform duration-300`}>
+            {icon}
+          </div>
+          <span className="text-2xl font-bold text-slate-900 group-hover:text-blue-700 transition-colors duration-300">{value}</span>
+        </div>
+        <h3 className="text-sm font-semibold text-slate-700 mb-1 group-hover:text-blue-800 transition-colors duration-300">{title}</h3>
+        <p className="text-xs text-slate-500">{subtitle}</p>
+      </div>
+    </CardWrapper>
+  );
+}
+
+type View = 'dashboard' | 'kyc' | 'loan' | 'review' | 'communications' | 'notifications' | 'audit' | 'voice_demo' | 'web_voice';
+
+interface GovernanceDashboardProps {
+  onNavigate?: (view: View) => void;
+}
+
+export function GovernanceDashboard({ onNavigate }: GovernanceDashboardProps) {
   const { profile } = useAuth();
   const [stats, setStats] = useState<Stats>({
     totalKycApplications: 0,
@@ -186,63 +230,64 @@ export function GovernanceDashboard() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <div className="bg-white rounded-xl shadow-md p-6 border-l-4 border-blue-500">
-          <div className="flex items-center justify-between mb-4">
-            <Users className="w-8 h-8 text-[#0A4A55]" />
-            <span className="text-2xl font-bold text-slate-900">{stats.totalKycApplications}</span>
-          </div>
-          <h3 className="text-sm font-semibold text-slate-700 mb-1">Total KYC Applications</h3>
-          <p className="text-xs text-slate-500">{stats.verifiedKyc} verified</p>
-        </div>
+        <DashboardCard
+          icon={<Users className="w-8 h-8" />}
+          value={stats.totalKycApplications}
+          title="Total KYC Applications"
+          subtitle={`${stats.verifiedKyc} verified`}
+          borderColor="border-blue-500"
+          iconColor="text-[#0A4A55]"
+        />
 
-        <div className="bg-white rounded-xl shadow-md p-6 border-l-4 border-green-500">
-          <div className="flex items-center justify-between mb-4">
-            <TrendingUp className="w-8 h-8 text-green-600" />
-            <span className="text-2xl font-bold text-slate-900">{stats.totalLoanApplications}</span>
-          </div>
-          <h3 className="text-sm font-semibold text-slate-700 mb-1">Loan Applications</h3>
-          <p className="text-xs text-slate-500">{stats.approvedLoans} approved</p>
-        </div>
+        <DashboardCard
+          icon={<TrendingUp className="w-8 h-8" />}
+          value={stats.totalLoanApplications}
+          title="Loan Applications"
+          subtitle={`${stats.approvedLoans} approved`}
+          borderColor="border-green-500"
+          iconColor="text-green-600"
+        />
 
-        <div className="bg-white rounded-xl shadow-md p-6 border-l-4 border-amber-500">
-          <div className="flex items-center justify-between mb-4">
-            <Clock className="w-8 h-8 text-amber-600" />
-            <span className="text-2xl font-bold text-slate-900">{stats.pendingReviews}</span>
-          </div>
-          <h3 className="text-sm font-semibold text-slate-700 mb-1">Pending Reviews</h3>
-          <p className="text-xs text-slate-500">Require attention</p>
-        </div>
+        <DashboardCard
+          icon={<Clock className="w-8 h-8" />}
+          value={stats.pendingReviews}
+          title="Pending Reviews"
+          subtitle="Require attention"
+          borderColor="border-amber-500"
+          iconColor="text-amber-600"
+          onClick={onNavigate ? () => onNavigate('review') : undefined}
+        />
 
-        <div className="bg-white rounded-xl shadow-md p-6 border-l-4 border-red-500">
-          <div className="flex items-center justify-between mb-4">
-            <AlertTriangle className="w-8 h-8 text-red-600" />
-            <span className="text-2xl font-bold text-slate-900">{stats.criticalAlerts}</span>
-          </div>
-          <h3 className="text-sm font-semibold text-slate-700 mb-1">Critical Alerts</h3>
-          <p className="text-xs text-slate-500">Unresolved issues</p>
-        </div>
+        <DashboardCard
+          icon={<AlertTriangle className="w-8 h-8" />}
+          value={stats.criticalAlerts}
+          title="Critical Alerts"
+          subtitle="Unresolved issues"
+          borderColor="border-red-500"
+          iconColor="text-red-600"
+        />
 
-        <div className="bg-white rounded-xl shadow-md p-6 border-l-4 border-emerald-500">
-          <div className="flex items-center justify-between mb-4">
-            <CheckCircle className="w-8 h-8 text-emerald-600" />
-            <span className="text-2xl font-bold text-slate-900">{stats.aiAccuracy.toFixed(1)}%</span>
-          </div>
-          <h3 className="text-sm font-semibold text-slate-700 mb-1">AI Confidence</h3>
-          <p className="text-xs text-slate-500">Average AI score</p>
-        </div>
+        <DashboardCard
+          icon={<CheckCircle className="w-8 h-8" />}
+          value={`${stats.aiAccuracy.toFixed(1)}%`}
+          title="AI Confidence"
+          subtitle="Average AI score"
+          borderColor="border-emerald-500"
+          iconColor="text-emerald-600"
+        />
 
-        <div className="bg-white rounded-xl shadow-md p-6 border-l-4 border-purple-500">
-          <div className="flex items-center justify-between mb-4">
-            <FileText className="w-8 h-8 text-purple-600" />
-            <span className="text-2xl font-bold text-slate-900">
-              {stats.avgProcessingTimeHours < 1
-                ? `${Math.round(stats.avgProcessingTimeHours * 60)}m`
-                : `${stats.avgProcessingTimeHours.toFixed(1)}h`}
-            </span>
-          </div>
-          <h3 className="text-sm font-semibold text-slate-700 mb-1">Avg. Processing Time</h3>
-          <p className="text-xs text-slate-500">Submission to decision</p>
-        </div>
+        <DashboardCard
+          icon={<FileText className="w-8 h-8" />}
+          value={
+            stats.avgProcessingTimeHours < 1
+              ? `${Math.round(stats.avgProcessingTimeHours * 60)}m`
+              : `${stats.avgProcessingTimeHours.toFixed(1)}h`
+          }
+          title="Avg. Processing Time"
+          subtitle="Submission to decision"
+          borderColor="border-purple-500"
+          iconColor="text-purple-600"
+        />
       </div>
 
       <div className="bg-white rounded-xl shadow-md p-6">

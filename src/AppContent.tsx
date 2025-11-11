@@ -226,7 +226,7 @@ export function AppContent() {
       </nav>
 
       <main className="max-w-7xl mx-auto py-6">
-        {currentView === 'dashboard' && <GovernanceDashboard />}
+        {currentView === 'dashboard' && <GovernanceDashboard onNavigate={setCurrentView} />}
         {currentView === 'audit' && <AuditorDashboard />}
         {currentView === 'review' && <ComplianceReviewQueue />}
         {currentView === 'kyc' && <KYCVerificationForm />}
