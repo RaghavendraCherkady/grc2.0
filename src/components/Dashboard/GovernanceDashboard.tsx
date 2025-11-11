@@ -64,7 +64,7 @@ function DashboardCard({ icon, value, title, subtitle, borderColor, iconColor, o
   );
 }
 
-type View = 'dashboard' | 'kyc' | 'loan' | 'review' | 'communications' | 'notifications' | 'audit' | 'voice_demo' | 'web_voice';
+type View = 'dashboard' | 'kyc' | 'loan' | 'review' | 'communications' | 'notifications' | 'audit' | 'voice_demo' | 'web_voice' | 'ai_confidence';
 
 interface GovernanceDashboardProps {
   onNavigate?: (view: View) => void;
@@ -277,7 +277,7 @@ export function GovernanceDashboard({ onNavigate }: GovernanceDashboardProps) {
           subtitle="Average AI score"
           borderColor="border-emerald-500"
           iconColor="text-emerald-600"
-          onClick={onNavigate ? () => onNavigate('audit') : undefined}
+          onClick={onNavigate ? () => onNavigate('ai_confidence') : undefined}
         />
 
         <DashboardCard

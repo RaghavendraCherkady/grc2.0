@@ -10,9 +10,10 @@ import { NotificationPreferences } from './components/Notifications/Notification
 import { AuditorDashboard } from './components/Audit/AuditorDashboard';
 import { VoiceCallDemo } from './components/Demo/VoiceCallDemo';
 import { WebVoiceCallDemo } from './components/Demo/WebVoiceCallDemo';
-import { Shield, FileText, TrendingUp, LayoutDashboard, Clipboard, LogOut, Menu, X, Bell, Settings, Search, Phone, Headphones } from 'lucide-react';
+import { AIConfidenceView } from './components/Dashboard/AIConfidenceView';
+import { Shield, FileText, TrendingUp, LayoutDashboard, Clipboard, LogOut, Menu, X, Bell, Settings, Search, Phone, Headphones, Brain } from 'lucide-react';
 
-type View = 'dashboard' | 'kyc' | 'loan' | 'review' | 'communications' | 'notifications' | 'audit' | 'voice_demo' | 'web_voice';
+type View = 'dashboard' | 'kyc' | 'loan' | 'review' | 'communications' | 'notifications' | 'audit' | 'voice_demo' | 'web_voice' | 'ai_confidence';
 
 const getDefaultView = (role: string): View => {
   if (role === 'loan_officer' || role === 'branch_manager' || role === 'relationship_manager' || role === 'compliance_officer') {
@@ -235,6 +236,7 @@ export function AppContent() {
         {currentView === 'notifications' && <NotificationPreferences />}
         {currentView === 'voice_demo' && <VoiceCallDemo />}
         {currentView === 'web_voice' && <WebVoiceCallDemo />}
+        {currentView === 'ai_confidence' && <AIConfidenceView />}
       </main>
 
       <footer className="bg-white border-t border-slate-200 mt-12">
