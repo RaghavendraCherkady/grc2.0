@@ -15,7 +15,7 @@ import { Shield, FileText, TrendingUp, LayoutDashboard, Clipboard, LogOut, Menu,
 type View = 'dashboard' | 'kyc' | 'loan' | 'review' | 'communications' | 'notifications' | 'audit' | 'voice_demo' | 'web_voice';
 
 const getDefaultView = (role: string): View => {
-  if (role === 'loan_officer' || role === 'branch_manager' || role === 'relationship_manager') {
+  if (role === 'loan_officer' || role === 'branch_manager' || role === 'relationship_manager' || role === 'compliance_officer') {
     return 'kyc';
   }
   if (role === 'compliance_manager' || role === 'cco') {
@@ -24,7 +24,10 @@ const getDefaultView = (role: string): View => {
   if (role === 'internal_auditor') {
     return 'audit';
   }
-  return 'dashboard';
+  if (role === 'system_admin') {
+    return 'dashboard';
+  }
+  return 'kyc';
 };
 
 export function AppContent() {
@@ -93,17 +96,19 @@ export function AppContent() {
       id: 'notifications',
       label: 'Notification Settings',
       icon: <Settings className="w-5 h-5" />,
-      excludeRoles: ['cco', 'internal_auditor', 'compliance_manager'],
+      roles: ['system_admin'],
     },
     {
       id: 'voice_demo',
       label: 'Voice Call Demo',
       icon: <Phone className="w-5 h-5" />,
+      roles: ['system_admin'],
     },
     {
       id: 'web_voice',
       label: 'Web Voice Demo',
       icon: <Headphones className="w-5 h-5" />,
+      roles: ['system_admin'],
     },
   ];
 
