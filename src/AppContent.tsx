@@ -25,7 +25,7 @@ const getDefaultView = (role: string): View => {
     return 'audit';
   }
   if (role === 'system_admin') {
-    return 'dashboard';
+    return 'communications';
   }
   return 'kyc';
 };
@@ -61,31 +61,31 @@ export function AppContent() {
       id: 'dashboard',
       label: 'Dashboard',
       icon: <LayoutDashboard className="w-5 h-5" />,
-      roles: ['cco', 'compliance_manager', 'system_admin'],
+      roles: ['cco', 'compliance_manager'],
     },
     {
       id: 'audit',
       label: 'Audit Dashboard',
       icon: <Search className="w-5 h-5" />,
-      roles: ['internal_auditor', 'cco', 'system_admin'],
+      roles: ['internal_auditor', 'cco'],
     },
     {
       id: 'review',
       label: 'Review Queue',
       icon: <Clipboard className="w-5 h-5" />,
-      roles: ['compliance_manager', 'cco', 'system_admin'],
+      roles: ['compliance_manager', 'cco'],
     },
     {
       id: 'kyc',
       label: 'KYC Application',
       icon: <FileText className="w-5 h-5" />,
-      excludeRoles: ['cco', 'internal_auditor'],
+      excludeRoles: ['cco', 'internal_auditor', 'system_admin'],
     },
     {
       id: 'loan',
       label: 'Loan Application',
       icon: <TrendingUp className="w-5 h-5" />,
-      excludeRoles: ['cco', 'internal_auditor'],
+      excludeRoles: ['cco', 'internal_auditor', 'system_admin'],
     },
     {
       id: 'communications',
