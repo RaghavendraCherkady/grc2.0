@@ -22,7 +22,7 @@ Deno.serve(async (req: Request) => {
     );
 
     const users = [
-      { email: "officer@compliance.com", password: "Officer123!", fullName: "John Officer", role: "compliance_officer" },
+      { email: "officer@compliance.com", password: "Officer123!", fullName: "John Officer", role: "loan_officer" },
       { email: "manager@compliance.com", password: "Manager123!", fullName: "Sarah Manager", role: "compliance_manager" },
       { email: "cco@compliance.com", password: "CCO123!", fullName: "Michael CCO", role: "cco" },
       { email: "auditor@compliance.com", password: "Auditor123!", fullName: "Lisa Auditor", role: "internal_auditor" },
