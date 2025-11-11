@@ -237,6 +237,7 @@ export function GovernanceDashboard({ onNavigate }: GovernanceDashboardProps) {
           subtitle={`${stats.verifiedKyc} verified`}
           borderColor="border-blue-500"
           iconColor="text-[#0A4A55]"
+          onClick={onNavigate ? () => onNavigate('review') : undefined}
         />
 
         <DashboardCard
@@ -246,6 +247,7 @@ export function GovernanceDashboard({ onNavigate }: GovernanceDashboardProps) {
           subtitle={`${stats.approvedLoans} approved`}
           borderColor="border-green-500"
           iconColor="text-green-600"
+          onClick={onNavigate ? () => onNavigate('review') : undefined}
         />
 
         <DashboardCard
@@ -265,6 +267,7 @@ export function GovernanceDashboard({ onNavigate }: GovernanceDashboardProps) {
           subtitle="Unresolved issues"
           borderColor="border-red-500"
           iconColor="text-red-600"
+          onClick={onNavigate ? () => onNavigate('review') : undefined}
         />
 
         <DashboardCard
@@ -274,6 +277,7 @@ export function GovernanceDashboard({ onNavigate }: GovernanceDashboardProps) {
           subtitle="Average AI score"
           borderColor="border-emerald-500"
           iconColor="text-emerald-600"
+          onClick={onNavigate ? () => onNavigate('audit') : undefined}
         />
 
         <DashboardCard
@@ -287,6 +291,7 @@ export function GovernanceDashboard({ onNavigate }: GovernanceDashboardProps) {
           subtitle="Submission to decision"
           borderColor="border-purple-500"
           iconColor="text-purple-600"
+          onClick={onNavigate ? () => onNavigate('review') : undefined}
         />
       </div>
 
