@@ -96,6 +96,8 @@ Deno.serve(async (req: Request) => {
       };
 
       // Make voice call using Vapi API with pre-configured assistant
+      // Note: Vapi requires a phoneNumberId (verified phone number on your Vapi account)
+      // You need to add a phone number in your Vapi dashboard first
       const vapiResponse = await fetch("https://api.vapi.ai/call/phone", {
         method: "POST",
         headers: {
@@ -104,6 +106,7 @@ Deno.serve(async (req: Request) => {
         },
         body: JSON.stringify({
           assistantId: assistantId,
+          phoneNumberId: Deno.env.get("VAPI_PHONE_NUMBER_ID") || null, // Get from env or Vapi dashboard
           customer: {
             number: cleanPhone,
             name: customerName,

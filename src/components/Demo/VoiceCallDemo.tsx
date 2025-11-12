@@ -90,7 +90,14 @@ export function VoiceCallDemo() {
       if (data.success) {
         setResult(data);
       } else {
-        throw new Error(data.error || 'Voice call failed');
+        let errorMsg = data.error || 'Voice call failed';
+
+        // Check for phone number configuration error
+        if (errorMsg.includes('phoneNumberId') || errorMsg.includes('phoneNumber')) {
+          errorMsg = 'Vapi phone number not configured. Please add a phone number in your Vapi dashboard and set the VAPI_PHONE_NUMBER_ID environment variable. See VAPI_SETUP_GUIDE.md for instructions.';
+        }
+
+        throw new Error(errorMsg);
       }
     } catch (err: any) {
       console.error('Error making voice call:', err);
