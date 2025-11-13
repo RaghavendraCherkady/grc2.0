@@ -497,6 +497,427 @@ interface RecordDetailModalProps {
 }
 
 function RecordDetailModal({ record, type, onClose, getStatusBadge, getSeverityBadge }: RecordDetailModalProps) {
+  const renderKYCDetails = () => (
+    <div className="space-y-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label className="text-sm font-medium text-slate-600">Customer Name</label>
+          <p className="text-slate-900 font-semibold mt-1">{record.customer_name}</p>
+        </div>
+        <div>
+          <label className="text-sm font-medium text-slate-600">Email</label>
+          <p className="text-slate-900 mt-1">{record.customer_email}</p>
+        </div>
+        <div>
+          <label className="text-sm font-medium text-slate-600">Phone Number</label>
+          <p className="text-slate-900 mt-1">{record.customer_phone}</p>
+        </div>
+        <div>
+          <label className="text-sm font-medium text-slate-600">Status</label>
+          <div className="mt-1">{getStatusBadge(record.status)}</div>
+        </div>
+      </div>
+
+      <div className="border-t pt-4">
+        <h3 className="font-semibold text-slate-900 mb-3">Identity Information</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label className="text-sm font-medium text-slate-600">Document Type</label>
+            <p className="text-slate-900 mt-1">{record.identity_doc_type}</p>
+          </div>
+          <div>
+            <label className="text-sm font-medium text-slate-600">Document Number</label>
+            <p className="text-slate-900 mt-1">{record.identity_doc_number}</p>
+          </div>
+          <div>
+            <label className="text-sm font-medium text-slate-600">Date of Birth</label>
+            <p className="text-slate-900 mt-1">{record.date_of_birth}</p>
+          </div>
+          <div>
+            <label className="text-sm font-medium text-slate-600">Address</label>
+            <p className="text-slate-900 mt-1">{record.address}</p>
+          </div>
+        </div>
+      </div>
+
+      {record.ai_validation_result && (
+        <div className="border-t pt-4">
+          <h3 className="font-semibold text-slate-900 mb-3">AI Validation</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="text-sm font-medium text-slate-600">AI Status</label>
+              <div className="mt-1">{getStatusBadge(record.ai_status || 'pending')}</div>
+            </div>
+            <div>
+              <label className="text-sm font-medium text-slate-600">Confidence Score</label>
+              <p className="text-slate-900 mt-1">{record.ai_confidence_score || 'N/A'}</p>
+            </div>
+          </div>
+          {record.ai_validation_result.issues && record.ai_validation_result.issues.length > 0 && (
+            <div className="mt-3">
+              <label className="text-sm font-medium text-slate-600">Issues Found</label>
+              <ul className="mt-2 space-y-1">
+                {record.ai_validation_result.issues.map((issue: string, idx: number) => (
+                  <li key={idx} className="text-sm text-red-600 flex items-start gap-2">
+                    <span>•</span>
+                    <span>{issue}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
+      )}
+
+      <div className="border-t pt-4">
+        <h3 className="font-semibold text-slate-900 mb-3">Audit Information</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label className="text-sm font-medium text-slate-600">Created By</label>
+            <p className="text-slate-900 mt-1">{record.created_by_profile?.full_name || 'N/A'}</p>
+          </div>
+          <div>
+            <label className="text-sm font-medium text-slate-600">Reviewed By</label>
+            <p className="text-slate-900 mt-1">{record.reviewed_by_profile?.full_name || 'Not reviewed'}</p>
+          </div>
+          <div>
+            <label className="text-sm font-medium text-slate-600">Created At</label>
+            <p className="text-slate-900 mt-1">{new Date(record.created_at).toLocaleString('en-IN')}</p>
+          </div>
+          <div>
+            <label className="text-sm font-medium text-slate-600">Last Updated</label>
+            <p className="text-slate-900 mt-1">{new Date(record.updated_at).toLocaleString('en-IN')}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderLoanDetails = () => (
+    <div className="space-y-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label className="text-sm font-medium text-slate-600">Customer Name</label>
+          <p className="text-slate-900 font-semibold mt-1">{record.kyc_applications?.customer_name}</p>
+        </div>
+        <div>
+          <label className="text-sm font-medium text-slate-600">Email</label>
+          <p className="text-slate-900 mt-1">{record.kyc_applications?.customer_email}</p>
+        </div>
+        <div>
+          <label className="text-sm font-medium text-slate-600">Status</label>
+          <div className="mt-1">{getStatusBadge(record.status)}</div>
+        </div>
+        <div>
+          <label className="text-sm font-medium text-slate-600">Governance Hold</label>
+          <p className="text-slate-900 mt-1">{record.governance_hold ? 'Yes' : 'No'}</p>
+        </div>
+      </div>
+
+      <div className="border-t pt-4">
+        <h3 className="font-semibold text-slate-900 mb-3">Loan Details</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label className="text-sm font-medium text-slate-600">Loan Type</label>
+            <p className="text-slate-900 mt-1">{record.loan_type}</p>
+          </div>
+          <div>
+            <label className="text-sm font-medium text-slate-600">Loan Amount</label>
+            <p className="text-slate-900 mt-1 text-lg font-semibold">₹{Number(record.loan_amount).toLocaleString('en-IN')}</p>
+          </div>
+          <div>
+            <label className="text-sm font-medium text-slate-600">Tenure</label>
+            <p className="text-slate-900 mt-1">{record.loan_tenure_months} months</p>
+          </div>
+          <div>
+            <label className="text-sm font-medium text-slate-600">Interest Rate</label>
+            <p className="text-slate-900 mt-1">{record.interest_rate}%</p>
+          </div>
+          <div>
+            <label className="text-sm font-medium text-slate-600">Purpose</label>
+            <p className="text-slate-900 mt-1">{record.loan_purpose}</p>
+          </div>
+          <div>
+            <label className="text-sm font-medium text-slate-600">EMI Amount</label>
+            <p className="text-slate-900 mt-1">₹{Number(record.emi_amount).toLocaleString('en-IN')}</p>
+          </div>
+        </div>
+      </div>
+
+      {record.risk_assessment_result && (
+        <div className="border-t pt-4">
+          <h3 className="font-semibold text-slate-900 mb-3">Risk Assessment</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="text-sm font-medium text-slate-600">Risk Score</label>
+              <p className="text-slate-900 mt-1">{record.risk_score || 'N/A'}</p>
+            </div>
+            <div>
+              <label className="text-sm font-medium text-slate-600">Risk Category</label>
+              <p className="text-slate-900 mt-1">{record.risk_category || 'N/A'}</p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <div className="border-t pt-4">
+        <h3 className="font-semibold text-slate-900 mb-3">Audit Information</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label className="text-sm font-medium text-slate-600">Created By</label>
+            <p className="text-slate-900 mt-1">{record.created_by_profile?.full_name || 'N/A'}</p>
+          </div>
+          <div>
+            <label className="text-sm font-medium text-slate-600">Assessed By</label>
+            <p className="text-slate-900 mt-1">{record.assessed_by_profile?.full_name || 'Not assessed'}</p>
+          </div>
+          <div>
+            <label className="text-sm font-medium text-slate-600">Approved By</label>
+            <p className="text-slate-900 mt-1">{record.approved_by_profile?.full_name || 'Not approved'}</p>
+          </div>
+          <div>
+            <label className="text-sm font-medium text-slate-600">Created At</label>
+            <p className="text-slate-900 mt-1">{new Date(record.created_at).toLocaleString('en-IN')}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderAlertDetails = () => (
+    <div className="space-y-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label className="text-sm font-medium text-slate-600">Title</label>
+          <p className="text-slate-900 font-semibold mt-1">{record.title}</p>
+        </div>
+        <div>
+          <label className="text-sm font-medium text-slate-600">Severity</label>
+          <div className="mt-1">{getSeverityBadge(record.severity)}</div>
+        </div>
+        <div>
+          <label className="text-sm font-medium text-slate-600">Alert Type</label>
+          <p className="text-slate-900 mt-1">{record.alert_type}</p>
+        </div>
+        <div>
+          <label className="text-sm font-medium text-slate-600">Status</label>
+          <div className="mt-1">{getStatusBadge(record.status)}</div>
+        </div>
+      </div>
+
+      <div>
+        <label className="text-sm font-medium text-slate-600">Description</label>
+        <p className="text-slate-900 mt-1">{record.description}</p>
+      </div>
+
+      {record.resolution_notes && (
+        <div>
+          <label className="text-sm font-medium text-slate-600">Resolution Notes</label>
+          <p className="text-slate-900 mt-1">{record.resolution_notes}</p>
+        </div>
+      )}
+
+      <div className="border-t pt-4">
+        <h3 className="font-semibold text-slate-900 mb-3">Related Entities</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {record.related_kyc_id && (
+            <div>
+              <label className="text-sm font-medium text-slate-600">Related KYC ID</label>
+              <p className="text-slate-900 mt-1 font-mono text-xs">{record.related_kyc_id}</p>
+            </div>
+          )}
+          {record.related_loan_id && (
+            <div>
+              <label className="text-sm font-medium text-slate-600">Related Loan ID</label>
+              <p className="text-slate-900 mt-1 font-mono text-xs">{record.related_loan_id}</p>
+            </div>
+          )}
+          {record.related_user_id && (
+            <div>
+              <label className="text-sm font-medium text-slate-600">Related User ID</label>
+              <p className="text-slate-900 mt-1 font-mono text-xs">{record.related_user_id}</p>
+            </div>
+          )}
+        </div>
+      </div>
+
+      <div className="border-t pt-4">
+        <h3 className="font-semibold text-slate-900 mb-3">Management</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label className="text-sm font-medium text-slate-600">Assigned To</label>
+            <p className="text-slate-900 mt-1">{record.assigned_to_profile?.full_name || 'Unassigned'}</p>
+          </div>
+          <div>
+            <label className="text-sm font-medium text-slate-600">Resolved By</label>
+            <p className="text-slate-900 mt-1">{record.resolved_by_profile?.full_name || 'Not resolved'}</p>
+          </div>
+          <div>
+            <label className="text-sm font-medium text-slate-600">Created At</label>
+            <p className="text-slate-900 mt-1">{new Date(record.created_at).toLocaleString('en-IN')}</p>
+          </div>
+          {record.resolved_at && (
+            <div>
+              <label className="text-sm font-medium text-slate-600">Resolved At</label>
+              <p className="text-slate-900 mt-1">{new Date(record.resolved_at).toLocaleString('en-IN')}</p>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderAuditLogDetails = () => (
+    <div className="space-y-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label className="text-sm font-medium text-slate-600">Action Type</label>
+          <p className="text-slate-900 font-semibold mt-1">{record.action_type}</p>
+        </div>
+        <div>
+          <label className="text-sm font-medium text-slate-600">Entity Type</label>
+          <p className="text-slate-900 mt-1">{record.entity_type}</p>
+        </div>
+        <div>
+          <label className="text-sm font-medium text-slate-600">User</label>
+          <p className="text-slate-900 mt-1">{record.profiles?.full_name || 'System'}</p>
+        </div>
+        <div>
+          <label className="text-sm font-medium text-slate-600">User Role</label>
+          <p className="text-slate-900 mt-1">{record.profiles?.role || 'N/A'}</p>
+        </div>
+        <div>
+          <label className="text-sm font-medium text-slate-600">Timestamp</label>
+          <p className="text-slate-900 mt-1">{new Date(record.created_at).toLocaleString('en-IN')}</p>
+        </div>
+        <div>
+          <label className="text-sm font-medium text-slate-600">IP Address</label>
+          <p className="text-slate-900 mt-1 font-mono text-xs">{record.ip_address || 'N/A'}</p>
+        </div>
+      </div>
+
+      {record.entity_id && (
+        <div>
+          <label className="text-sm font-medium text-slate-600">Entity ID</label>
+          <p className="text-slate-900 mt-1 font-mono text-xs">{record.entity_id}</p>
+        </div>
+      )}
+
+      {record.changes && (
+        <div>
+          <label className="text-sm font-medium text-slate-600">Changes</label>
+          <div className="mt-2 bg-slate-50 p-4 rounded-lg">
+            <pre className="text-xs overflow-auto">{JSON.stringify(record.changes, null, 2)}</pre>
+          </div>
+        </div>
+      )}
+
+      {record.metadata && (
+        <div>
+          <label className="text-sm font-medium text-slate-600">Metadata</label>
+          <div className="mt-2 bg-slate-50 p-4 rounded-lg">
+            <pre className="text-xs overflow-auto">{JSON.stringify(record.metadata, null, 2)}</pre>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+
+  const renderObservationDetails = () => (
+    <div className="space-y-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label className="text-sm font-medium text-slate-600">Title</label>
+          <p className="text-slate-900 font-semibold mt-1">{record.title}</p>
+        </div>
+        <div>
+          <label className="text-sm font-medium text-slate-600">Severity</label>
+          <div className="mt-1">{getSeverityBadge(record.severity)}</div>
+        </div>
+        <div>
+          <label className="text-sm font-medium text-slate-600">Observation Type</label>
+          <p className="text-slate-900 mt-1">{record.observation_type}</p>
+        </div>
+        <div>
+          <label className="text-sm font-medium text-slate-600">Status</label>
+          <div className="mt-1">{getStatusBadge(record.status)}</div>
+        </div>
+        <div>
+          <label className="text-sm font-medium text-slate-600">Area Audited</label>
+          <p className="text-slate-900 mt-1">{record.area_audited}</p>
+        </div>
+        <div>
+          <label className="text-sm font-medium text-slate-600">Risk Level</label>
+          <p className="text-slate-900 mt-1">{record.risk_level}</p>
+        </div>
+      </div>
+
+      <div>
+        <label className="text-sm font-medium text-slate-600">Description</label>
+        <p className="text-slate-900 mt-1">{record.description}</p>
+      </div>
+
+      {record.recommendation && (
+        <div>
+          <label className="text-sm font-medium text-slate-600">Recommendation</label>
+          <p className="text-slate-900 mt-1">{record.recommendation}</p>
+        </div>
+      )}
+
+      {record.management_response && (
+        <div>
+          <label className="text-sm font-medium text-slate-600">Management Response</label>
+          <p className="text-slate-900 mt-1">{record.management_response}</p>
+        </div>
+      )}
+
+      <div className="border-t pt-4">
+        <h3 className="font-semibold text-slate-900 mb-3">Audit Information</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label className="text-sm font-medium text-slate-600">Auditor</label>
+            <p className="text-slate-900 mt-1">{record.auditor?.full_name || 'N/A'}</p>
+          </div>
+          <div>
+            <label className="text-sm font-medium text-slate-600">Target Closure Date</label>
+            <p className="text-slate-900 mt-1">{record.target_closure_date ? new Date(record.target_closure_date).toLocaleDateString('en-IN') : 'N/A'}</p>
+          </div>
+          <div>
+            <label className="text-sm font-medium text-slate-600">Created At</label>
+            <p className="text-slate-900 mt-1">{new Date(record.created_at).toLocaleString('en-IN')}</p>
+          </div>
+          {record.resolved_at && (
+            <div>
+              <label className="text-sm font-medium text-slate-600">Resolved At</label>
+              <p className="text-slate-900 mt-1">{new Date(record.resolved_at).toLocaleString('en-IN')}</p>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderContent = () => {
+    switch (type) {
+      case 'kyc':
+        return renderKYCDetails();
+      case 'loan':
+        return renderLoanDetails();
+      case 'alert':
+        return renderAlertDetails();
+      case 'audit_log':
+        return renderAuditLogDetails();
+      case 'observation':
+        return renderObservationDetails();
+      default:
+        return (
+          <pre className="bg-slate-50 p-4 rounded-lg overflow-auto text-xs">
+            {JSON.stringify(record, null, 2)}
+          </pre>
+        );
+    }
+  };
+
   return (
     <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4 overflow-y-auto">
       <div className="bg-white rounded-xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-auto">
@@ -511,9 +932,7 @@ function RecordDetailModal({ record, type, onClose, getStatusBadge, getSeverityB
         </div>
 
         <div className="p-6">
-          <pre className="bg-slate-50 p-4 rounded-lg overflow-auto text-xs">
-            {JSON.stringify(record, null, 2)}
-          </pre>
+          {renderContent()}
         </div>
       </div>
     </div>
